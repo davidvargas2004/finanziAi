@@ -1,4 +1,12 @@
 /* From Uiverse.io by kyle1dev */ 
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
 .modern-form {
   --primary: #3b82f6;
   --primary-dark: #2563eb;

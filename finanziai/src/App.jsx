@@ -10,7 +10,7 @@ function App() {
     <>
           
     <form class="modern-form">
-      <div class="form-title">Sign Up</div>
+      <div class="form-title">Registro</div>
 
       <div class="form-body">
         <div class="input-group">
@@ -32,7 +32,7 @@ function App() {
             </svg>
             <input
               required=""
-              placeholder="Username"
+              placeholder="Usuario"
               class="form-input"
               type="text"
             />
@@ -50,7 +50,7 @@ function App() {
             </svg>
             <input
               required=""
-              placeholder="Email"
+              placeholder="Correo Electrónico"
               class="form-input"
               type="email"
             />
@@ -68,7 +68,7 @@ function App() {
             </svg>
             <input
               required=""
-              placeholder="Password"
+              placeholder="Contraseña"
               class="form-input"
               type="password"
             />
@@ -93,13 +93,13 @@ function App() {
       </div>
     
       <button class="submit-button" type="submit">
-        <span class="button-text">Create Account</span>
+        <span class="button-text">Crear cuenta</span>
         <div class="button-glow"></div>
       </button>
 
       <div class="form-footer">
         <a class="login-link" href="#">
-          Already have an account? <span>Login</span>
+          ¿Ya tienes una cuenta? <span>Inicia Sesión</span>
         </a>
       </div>
     </form>
