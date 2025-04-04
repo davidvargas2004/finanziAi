@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+// import reactLogo from './assets/react.svg'
+// import viteLogo from '/vite.svg'
+import { Link } from 'react-router-dom'
+import './App.css';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -52,7 +53,12 @@ function App() {
             <button class="button1">
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Iniciar Sesión&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </button>
-            <button class="button2">Registrarse</button>
+            {/* es un metodo que permite navegar entre los routes de react */}
+
+            <Link to="/registro"> 
+              <button class="button1">Registrarse</button>
+            </Link>
+            
           </div>
           <button class="button3">Recuperar contraseña</button>
         </form>

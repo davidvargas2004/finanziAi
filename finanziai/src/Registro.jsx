@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import {useState} from 'react';
+import {Link} from 'react-router-dom';
+import React from 'react';//importamos a react para que trabaje en este archivo jsx
+
 import './App.css'
 
 function App() {
@@ -112,13 +113,14 @@ function App() {
             <button class="button1">
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Confirmar Registro&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </button>
-            <button class="button2">Inicio de Sesión</button>
+            <Link to="/indexApp">
+              <button class="button2">Inicio de Sesión</button>
+            </Link>
+            
           </div>
         </form>
       </div>
-    </div>
-
-            
+    </div>        
     </>
   )
 }
