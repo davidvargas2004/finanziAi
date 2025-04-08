@@ -113,7 +113,7 @@ function App() {
             <button class="button1">
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Confirmar Registro&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </button>
-            <Link to="/indexApp">
+            <Link to="/">
               <button class="button2">Inicio de Sesión</button>
             </Link>
             
