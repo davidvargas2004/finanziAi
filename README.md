@@ -1,0 +1,1 @@
+Un sistema web de gestión de finanzas personales desarrollado con el framework Django, que integra la inteligencia artificial de Gemini para automatizar la categorización de gastos, analizar patrones de consumo, ofrecer recomendaciones personalizadas de ahorro/inversión y generar proyecciones financieras inteligentes.
