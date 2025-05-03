@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado Financiero</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            background-color: #f0f0f0;
+        }
+
+        .card {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 700px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2, h3 {
+            color: #333;
+        }
+
+        ul {
+            margin-top: 1rem;
+            padding-left: 1.2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 2rem;
+            text-decoration: none;
+            color: #af4c9e;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Hola, {{ nombre }}</h2>
+        <p><strong>Total de Gastos:</strong> ${{ total_gastos }}</p>
+        <p><strong>Ahorro Mensual:</strong> ${{ ahorro_mensual }}</p>
+        <p><strong>Meta de Ahorro:</strong> ${{ meta_ahorro }}</p>
+
+        <h3>Recomendaciones de la IA</h3>
+        <ul>
+            {% for linea in lineas_recomendaciones %}
+                <li>{{ linea }}</li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'formulario' %}">Volver al formulario</a>
+    </div>
+</body>
+</html>

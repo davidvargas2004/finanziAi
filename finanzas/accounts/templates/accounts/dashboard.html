@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzia - Dashboard</title>
+    <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h2>Finanzia</h2>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#"><span class="icon">📊</span> Dashboard</a></li>
+                <li><a href="#"><span class="icon">💰</span> Accounts</a></li>
+                <li><a href="#"><span class="icon">📈</span> Investments</a></li>
+                <li><a href="#"><span class="icon">💹</span> Transactions</a></li>
+                <li><a href="#"><span class="icon">⚙️</span> Settings</a></li>
+                <li><a href="{% url 'logout' %}"><span class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+        
+        <main class="content">
+            <header>
+                <div class="search-container">
+                    <input type="text" placeholder="Search...">
+                    <button type="button">🔍</button>
+                </div>
+                <div class="user-info">
+                    <span class="notifications">🔔</span>
+                    <div class="user">
+                        <span class="user-name">{{ user.first_name }} {{ user.last_name }}</span>
+                        <span class="user-avatar">👤</span>
+                    </div>
+                </div>
+            </header>
+            <section class="dashboard-section">
+                <div class="card">
+                  <h3>Recomendaciones financieras</h3>
+                  <p>Analiza tus ingresos, gastos y metas de ahorro.</p>
+                  <a href="{% url 'formulario' %}" class="boton-ir-formulario">Ir al Formulario</a>
+                </div>
+              </section>
+              
+              <style>
+              .boton-ir-formulario {
+                display: inline-block;
+                padding: 12px 24px;
+                margin-top: 20px;
+                background-color: #4CAF50;
+                color: white;
+                font-weight: bold;
+                text-decoration: none;
+                border-radius: 8px;
+                transition: background-color 0.3s ease;
+              }
+              .boton-ir-formulario:hover {
+                background-color: #45a049;
+              }
+              </style>
+              
+            <div class="dashboard-content">
+                <h1>Welcome to your Dashboard, {{ user.first_name }}!</h1>
+                <p>You have successfully logged in.</p>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h3>Total Balance</h3>
+                        <p class="value">$10,250.00</p>
+                        <p class="change positive">+2.5% from last month</p>
+                    </div>
+                    <div class="card">
+                        <h3>Income</h3>
+                        <p class="value">$3,450.00</p>
+                        <p class="change positive">+4.3% from last month</p>
+                    </div>
+                    <div class="card">
+                        <h3>Expenses</h3>
+                        <p class="value">$2,150.00</p>
+                        <p class="change negative">+1.2% from last month</p>
+                
+                          
+                    </div>
+                    <a href="{% url 'formulario' %}" class="boton-ir-formulario">Ir al Formulario</a>
+
+
+<style>
+.boton-ir-formulario {
+  display: inline-block;
+  padding: 12px 24px;
+  margin-top: 20px;
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.boton-ir-formulario:hover {
+  background-color: #45a049;
+}
+</style>
+
+                      </body>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

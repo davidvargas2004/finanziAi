@@ -1,0 +1,167 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #1a3720;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.signup-container {
+    display: flex;
+    width: 900px;
+    height: 600px;
+    background-color: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.signup-form {
+    flex: 1;
+    padding: 40px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.signup-image {
+    flex: 1;
+    background-image: url('../images/fern.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+label {
+    display: block;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #444;
+    color: white;
+    outline: none;
+    font-size: 16px;
+}
+
+.terms-privacy {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.terms-privacy input {
+    margin-right: 10px;
+    margin-top: 5px;
+}
+
+.terms-privacy label {
+    text-transform: none;
+    font-size: 14px;
+}
+
+a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #3e8e41;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #aaa;
+}
+
+.success-message {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    background-color: rgba(255, 0, 0, 0.2);
+    color: #ff6b6b;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.info-message {
+    background-color: rgba(33, 150, 243, 0.2);
+    color: #2196f3;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+
+@media (max-width: 768px) {
+    .signup-container {
+        width: 90%;
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .signup-image {
+        height: 200px;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
