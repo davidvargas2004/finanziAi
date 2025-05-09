@@ -5,6 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from finanzas_micro.recomendador import generate_gemini_recommendation, guardar_en_mongo
 from datetime import datetime
+from .models import Notification
+from django.http import JsonResponse
+from django.utils.timezone import localtime
 
 def formulario_view(request):
     if request.method == 'POST':
@@ -33,6 +36,14 @@ def formulario_view(request):
             }
 
             guardar_en_mongo(contexto)
+
+            # Crear notificación al enviar formulario
+            if request.user.is_authenticated:
+                Notification.objects.create(
+                    user=request.user,
+                    message="Tu formulario fue enviado y procesado exitosamente."
+                )
+
             recomendacion = generate_gemini_recommendation(contexto)
             lineas_recomendaciones = recomendacion.strip().splitlines()
 
@@ -51,8 +62,6 @@ def formulario_view(request):
             })
 
     return render(request, "accounts/formulario.html")
-
-           
 
 
 def login_view(request):
@@ -76,6 +85,13 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
+
+            # Crear notificación al iniciar sesión
+            Notification.objects.create(
+                user=user,
+                message="Has iniciado sesión correctamente."
+            )
+
             if not remember_me:
                 request.session.set_expiry(0)
             return redirect('dashboard')
@@ -126,6 +142,13 @@ def signup_view(request):
                 last_name=last_name
             )
             login(request, user)
+
+            # Crear notificación al registrarse
+            Notification.objects.create(
+                user=user,
+                message="Bienvenido a Finanzia, tu cuenta ha sido creada."
+            )
+
             messages.success(request, 'Account created successfully! Welcome to Finanzia.')
             return redirect('dashboard')
         except Exception as e:
@@ -136,3 +159,29 @@ def signup_view(request):
 
 def password_reset_view(request):
     return render(request, 'accounts/password_reset.html')
+
+
+@login_required
+def notifications_view(request):
+    notis = Notification.objects.filter(user=request.user).order_by('-created_at')
+    data = [
+        {
+            'id': n.id,
+            'message': n.message,
+            'created_at': localtime(n.created_at).strftime('%Y-%m-%d %H:%M'),
+            'read': n.read
+        }
+        for n in notis
+    ]
+    return JsonResponse({'notifications': data})
+
+
+@login_required
+def mark_notification_read(request, notif_id):
+    try:
+        notif = Notification.objects.get(id=notif_id, user=request.user)
+        notif.read = True
+        notif.save()
+        return JsonResponse({'status': 'ok'})
+    except Notification.DoesNotExist:
+        return JsonResponse({'status': 'error'}, status=404)

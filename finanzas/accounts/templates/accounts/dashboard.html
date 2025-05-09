@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +22,7 @@
                 <li><a href="{% url 'logout' %}"><span class="icon">🚪</span> Logout</a></li>
             </ul>
         </nav>
-        
+
         <main class="content">
             <header>
                 <div class="search-container">
@@ -31,42 +30,33 @@
                     <button type="button">🔍</button>
                 </div>
                 <div class="user-info">
-                    <span class="notifications">🔔</span>
+                    <div class="notifications" onclick="toggleNotifications()">
+                        🔔<span id="notif-count" style="color:red; font-weight:bold;"></span>
+                    </div>
                     <div class="user">
                         <span class="user-name">{{ user.first_name }} {{ user.last_name }}</span>
                         <span class="user-avatar">👤</span>
                     </div>
                 </div>
+                <!-- Notification Box -->
+                <div id="notif-box" class="card" style="display:none; position:absolute; right:40px; top:70px; width:300px; max-height:400px; overflow-y:auto; z-index:100;">
+                    <h4 style="margin:10px;">Notificaciones</h4>
+                    <ul id="notif-list" style="list-style:none; padding:0; margin:0;"></ul>
+                </div>
             </header>
+
             <section class="dashboard-section">
                 <div class="card">
-                  <h3>Recomendaciones financieras</h3>
-                  <p>Analiza tus ingresos, gastos y metas de ahorro.</p>
-                  <a href="{% url 'formulario' %}" class="boton-ir-formulario">Ir al Formulario</a>
+                    <h3>Recomendaciones financieras</h3>
+                    <p>Analiza tus ingresos, gastos y metas de ahorro.</p>
+                    <a href="{% url 'formulario' %}" class="boton-ir-formulario">Ir al Formulario</a>
                 </div>
-              </section>
-              
-              <style>
-              .boton-ir-formulario {
-                display: inline-block;
-                padding: 12px 24px;
-                margin-top: 20px;
-                background-color: #4CAF50;
-                color: white;
-                font-weight: bold;
-                text-decoration: none;
-                border-radius: 8px;
-                transition: background-color 0.3s ease;
-              }
-              .boton-ir-formulario:hover {
-                background-color: #45a049;
-              }
-              </style>
-              
+            </section>
+
             <div class="dashboard-content">
                 <h1>Welcome to your Dashboard, {{ user.first_name }}!</h1>
                 <p>You have successfully logged in.</p>
-                
+
                 <div class="dashboard-cards">
                     <div class="card">
                         <h3>Total Balance</h3>
@@ -82,34 +72,73 @@
                         <h3>Expenses</h3>
                         <p class="value">$2,150.00</p>
                         <p class="change negative">+1.2% from last month</p>
-                
-                          
                     </div>
-                    <a href="{% url 'formulario' %}" class="boton-ir-formulario">Ir al Formulario</a>
-
-
-<style>
-.boton-ir-formulario {
-  display: inline-block;
-  padding: 12px 24px;
-  margin-top: 20px;
-  background-color: #4CAF50;
-  color: white;
-  font-weight: bold;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-}
-
-.boton-ir-formulario:hover {
-  background-color: #45a049;
-}
-</style>
-
-                      </body>
                 </div>
+
+                <a href="{% url 'formulario' %}" class="boton-ir-formulario">Ir al Formulario</a>
             </div>
         </main>
     </div>
+
+    <style>
+    .boton-ir-formulario {
+        display: inline-block;
+        padding: 12px 24px;
+        margin-top: 20px;
+        background-color: #4CAF50;
+        color: white;
+        font-weight: bold;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+    }
+
+    .boton-ir-formulario:hover {
+        background-color: #45a049;
+    }
+    </style>
+
+    <!-- Notificación JS -->
+    <script>
+    function toggleNotifications() {
+        const box = document.getElementById('notif-box');
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function fetchNotifications() {
+        fetch('/accounts/notifications/')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('notif-list');
+                const count = document.getElementById('notif-count');
+                list.innerHTML = '';
+                let unread = 0;
+
+                data.notifications.forEach(n => {
+                    const item = document.createElement('li');
+                    item.style.padding = '10px';
+                    item.style.borderBottom = '1px solid #ccc';
+                    item.style.background = n.read ? '#f0f0f0' : '#fff';
+                    item.style.cursor = 'pointer';
+                    item.innerHTML = `<strong>${n.message}</strong><br><small>${n.created_at}</small>`;
+                    item.onclick = () => markAsRead(n.id, item);
+                    list.appendChild(item);
+                    if (!n.read) unread++;
+                });
+
+                count.innerText = unread > 0 ? unread : '';
+            });
+    }
+
+    function markAsRead(id, item) {
+        fetch(`/accounts/notifications/read/${id}/`)
+            .then(() => {
+                item.style.background = '#f0f0f0';
+                fetchNotifications(); // refresh count
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchNotifications);
+    </script>
 </body>
 </html>
