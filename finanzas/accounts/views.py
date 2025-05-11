@@ -185,3 +185,12 @@ def mark_notification_read(request, notif_id):
         return JsonResponse({'status': 'ok'})
     except Notification.DoesNotExist:
         return JsonResponse({'status': 'error'}, status=404)
+
+
+def comparativa_mensual_view(request):
+    """
+    Vista simple que renderiza el template de comparativa mensual.
+    Todo el procesamiento de datos y visualización se hace en el frontend
+    con JavaScript.
+    """
+    return render(request, 'accounts/comparativa_mensual.html')

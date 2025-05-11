@@ -11,5 +11,6 @@ urlpatterns = [
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('notifications/', views.notifications_view, name='notifications'),
     path('notifications/read/<int:notif_id>/', views.mark_notification_read, name='mark_notification_read'),
+    path('comparativa-mensual/', views.comparativa_mensual_view, name='comparativa_mensual'),
 
 ]
