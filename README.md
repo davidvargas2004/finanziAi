@@ -3,7 +3,7 @@ Un sistema web de gestión de finanzas personales desarrollado con el framework 
 
 
 
-SI A LA HORA DE CORRER EL CODIGO NO FUNICONA PONER EL SIGIENTE CODIGO EN SETTINGS.PY
+➡️➡️➡️➡️➡️➡️SI A LA HORA DE CORRER EL CODIGO NO FUNICONA PONER EL SIGIENTE CODIGO EN SETTINGS.PY
 
 """
 Django settings for finanzia project.
