@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanzia - Dashboard</title>
+    <title>Finanzia - Gráfico</title>
     <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -15,9 +15,9 @@
                 <h2>Finanzia</h2>
             </div>
             <ul class="nav-links">
-                <li class="active"><a href="#"><span class="icon">📊</span> Dashboard</a></li>
+                <li><a href="{% url 'dashboard' %}"><span class="icon">📊</span> Dashboard</a></li>
                 <li><a href="{% url 'formulario' %}"><span class="icon">📋</span>Formulario</a></li>
-                <li><a href="{% url 'grafico' %}"><span class="icon">🪙</span>Gráfico</a></li>
+                <li class="active"><a href="#"><span class="icon">🪙</span>Gráfico</a></li>
                 <li><a href="#"><span class="icon">💰</span> Accounts</a></li>
                 <li><a href="#"><span class="icon">💹</span> Transactions</a></li>
                 <li><a href="#"><span class="icon">⚙️</span> Settings</a></li>
