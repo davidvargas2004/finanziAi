@@ -36,14 +36,6 @@ def formulario_view(request):
             }
 
             guardar_en_mongo(contexto)
-
-            # Crear notificación al enviar formulario
-            if request.user.is_authenticated:
-                Notification.objects.create(
-                    user=request.user,
-                    message="Tu formulario fue enviado y procesado exitosamente."
-                )
-
             recomendacion = generate_gemini_recommendation(contexto)
             lineas_recomendaciones = recomendacion.strip().splitlines()
 
