@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanzia - Comparativa Mensual</title>
+    <title>Finanzia - Dashboard</title>
     <link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -15,11 +15,12 @@
                 <h2>Finanzia</h2>
             </div>
             <ul class="nav-links">
-                <li><a href="{% url 'dashboard' %}"><span class="icon">📊</span> Dashboard</a></li>
-                <li class="active"><a href="#"><span class="icon">📈</span> Comparativa Mensual</a></li>
-                <li><a href="#"><span class="icon">💰</span> Accounts</a></li>
-                <li><a href="#"><span class="icon">💹</span> Transactions</a></li>
-                <li><a href="#"><span class="icon">⚙️</span> Settings</a></li>
+                <li class="active"><a href="#"><span class="icon">📊</span> Dashboard</a></li>
+                <li><a href="{% url 'formulario' %}"><span class="icon">📋</span>Formulario</a></li>
+                <li><a href="{% url 'grafico' %}"><span class="icon">🪙</span>Gráfico</a></li>
+                <li><a href="#"><span class="icon">💰</span> Cuentas</a></li>
+                <li><a href="#"><span class="icon">💹</span> Transacciones</a></li>
+                <li><a href="#"><span class="icon">⚙️</span> Configuración</a></li>
                 <li><a href="{% url 'logout' %}"><span class="icon">🚪</span> Logout</a></li>
             </ul>
         </nav>
@@ -48,9 +49,8 @@
 
             <!-- Contenido de la Comparativa Mensual -->
             <div class="dashboard-content">
-                <h1>Comparativa Mensual de Finanzas</h1>
-                <p>Analiza tus ingresos y gastos mensuales para mejorar tus finanzas.</p>
-
+            <h1>Estadísticas</h1>
+            <p>Consulta un promedio de todo lo que haz invertido</p>
                 <!-- Selector de Año -->
                 <div class="year-selector-container card" style="padding: 15px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
                     <h3 style="margin: 0;">Periodo de análisis:</h3>
@@ -87,6 +87,9 @@
                         <p class="change positive" id="mejor-mes-valor">$1,450.00</p>
                     </div>
                 </div>
+
+                <h1>Comparativa Mensual de Finanzas</h1>
+                <p>Analiza tus ingresos y gastos mensuales para mejorar tus finanzas.</p>
 
                 <!-- Gráficos -->
                 <div class="chart-container card" style="margin-top: 20px; padding: 20px;">

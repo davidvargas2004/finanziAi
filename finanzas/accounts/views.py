@@ -186,3 +186,6 @@ def comparativa_mensual_view(request):
     con JavaScript.
     """
     return render(request, 'accounts/comparativa_mensual.html')
+
+def grafico_view(request):
+    return render(request, 'accounts/grafico.html')

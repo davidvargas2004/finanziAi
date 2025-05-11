@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzia - Gráfico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'accounts/css/grafico.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h2>Finanzia</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{% url 'dashboard' %}"><span class="icon">📊</span> Dashboard</a></li>
+                <li><a href="{% url 'formulario' %}"><span class="icon">📋</span>Formulario</a></li>
+                <li class="active"><a href="#"><span class="icon">🪙</span>Gráfico</a></li>
+                <li><a href="#"><span class="icon">💰</span> Cuentas</a></li>
+                <li><a href="#"><span class="icon">💹</span> Transacciones</a></li>
+                <li><a href="#"><span class="icon">⚙️</span> Configuración</a></li>
+                <li><a href="{% url 'logout' %}"><span class="icon">🚪</span> Logout</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <header>
+                <div class="search-container">
+                    <input type="text" placeholder="Search...">
+                    <button type="button">🔍</button>
+                </div>
+                <div class="user-info">
+                    <div class="notifications" onclick="toggleNotifications()">
+                        🔔<span id="notif-count" style="color:red; font-weight:bold;"></span>
+                    </div>
+                    <div class="user">
+                        <span class="user-name">{{ user.first_name }} {{ user.last_name }}</span>
+                        <span class="user-avatar">👤</span>
+                    </div>
+                </div>
+                <!-- Notification Box -->
+                <div id="notif-box" class="card" style="display:none; position:absolute; right:40px; top:70px; width:300px; max-height:400px; overflow-y:auto; z-index:100;">
+                    <h4 style="margin:10px;">Notificaciones</h4>
+                    <ul id="notif-list" style="list-style:none; padding:0; margin:0;"></ul>
+                </div>
+            </header>
+
+            <!-- Contenido del gráfico circular -->
+            <div class="dashboard-content">
+                <div class="donut" id="donut-chart" data-total="$0"></div>
+                <div class="legend" id="legend"></div>
+                <div class="inputs">
+                <input type="text" id="label" placeholder="Categoría" />
+                <input type="number" id="value" placeholder="Monto ($)" />
+                <button onclick="addExpense()">Agregar Gasto</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static 'accounts/js/grafico.js' %}"></script>
+
+    <!-- Notificación JS -->
+    <script>
+    function toggleNotifications() {
+        const box = document.getElementById('notif-box');
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function fetchNotifications() {
+        fetch('/accounts/notifications/')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('notif-list');
+                const count = document.getElementById('notif-count');
+                list.innerHTML = '';
+                let unread = 0;
+
+                data.notifications.forEach(n => {
+                    const item = document.createElement('li');
+                    item.style.padding = '10px';
+                    item.style.borderBottom = '1px solid #ccc';
+                    item.style.background = n.read ? '#f0f0f0' : '#fff';
+                    item.style.cursor = 'pointer';
+                    item.innerHTML = `<strong>${n.message}</strong><br><small>${n.created_at}</small>`;
+                    item.onclick = () => markAsRead(n.id, item);
+                    list.appendChild(item);
+                    if (!n.read) unread++;
+                });
+
+                count.innerText = unread > 0 ? unread : '';
+            });
+    }
+
+    function markAsRead(id, item) {
+        fetch(`/accounts/notifications/read/${id}/`)
+            .then(() => {
+                item.style.background = '#f0f0f0';
+                fetchNotifications(); // refresh count
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchNotifications();
+        cargarComparativaMensual();
+    });
+    </script>
+</body>
+</html>
