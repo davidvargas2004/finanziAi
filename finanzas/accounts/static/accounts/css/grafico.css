@@ -288,3 +288,65 @@ header {
   border-radius: 4px;
   cursor: pointer;
 }
+
+.grafico-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  .grafico-box {
+    width: 100%;
+    max-width: 450px;
+    margin-bottom: 30px;
+  }
+
+  #myDonutChart {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .leyenda-personalizada {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: -10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+
+  .leyenda-item {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 14px;
+    color: #333;
+  }
+
+  .leyenda-color {
+    width: 20px;
+    height: 10px;
+    margin-right: 8px;
+    border-radius: 4px;
+  }
+
+  .detalle-gastos {
+    width: 100%;
+    max-width: 500px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px 30px;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .detalle-gastos p {
+    margin: 12px 0;
+    font-weight: 500;
+  }
+
+  .detalle-gastos strong {
+    color: #333;
+  }

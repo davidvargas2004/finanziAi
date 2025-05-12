@@ -48,27 +48,37 @@
                 </div>
             </header>
 
-            <!-- Contenido del gráfico circular -->
-<div class="dashboard-content">
-  <div style="max-width: 500px; margin: auto;">
-    <canvas id="donutChart"></canvas>
+<div class="dashboard-content grafico-container">
+  <!-- Gráfico -->
+  <div class="grafico-box">
+    <canvas id="myDonutChart"></canvas>
   </div>
-  <div style="margin-top: 20px; text-align: center;">
-    <ul id="legend" style="list-style: none; padding: 0; display: flex; justify-content: center; gap: 20px;">
-      <li><span style="display:inline-block;width:12px;height:12px;background:#ff6384;margin-right:6px;border-radius:2px;"></span> Alimentación</li>
-      <li><span style="display:inline-block;width:12px;height:12px;background:#36a2eb;margin-right:6px;border-radius:2px;"></span> Transporte</li>
-      <li><span style="display:inline-block;width:12px;height:12px;background:#ffce56;margin-right:6px;border-radius:2px;"></span> Entretenimiento</li>
-    </ul>
+
+  <!-- Leyenda personalizada -->
+  <div class="leyenda-personalizada">
+    <div class="leyenda-item"><span class="leyenda-color" style="background-color: #FF6F61;"></span>Alimentación</div>
+    <div class="leyenda-item"><span class="leyenda-color" style="background-color: #4A90E2;"></span>Transporte</div>
+    <div class="leyenda-item"><span class="leyenda-color" style="background-color: #7ED321;"></span>Entretenimiento</div>
   </div>
+
+  <!-- Detalles -->
+  <div class="detalle-gastos">
+    <p><strong>Alimentación:</strong> ${{ alimentacion }}</p>
+    <p><strong>Transporte:</strong> ${{ transporte }}</p>
+    <p><strong>Entretenimiento:</strong> ${{ entretenimiento }}</p>
+  </div>
+</div>
 </div>
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const ctx = document.getElementById('donutChart').getContext('2d');
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
-    const data = {
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const ctx = document.getElementById('myDonutChart').getContext('2d');
+
+  const datos = {
     labels: ['Alimentación', 'Transporte', 'Entretenimiento'],
     datasets: [{
       data: [
@@ -76,36 +86,38 @@
         parseFloat("{{ transporte|default:0 }}"),
         parseFloat("{{ entretenimiento|default:0 }}")
       ],
-      backgroundColor: ['#ff6384', '#36a2eb', '#ffce56'],
-      borderWidth: 1,
+      backgroundColor: ['#FF6F61', '#4A90E2', '#7ED321'],
+      borderWidth: 1
     }]
   };
 
-    const options = {
+  const total = datos.datasets[0].data.reduce((a, b) => a + b, 0);
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: datos,
+    options: {
       responsive: true,
-      cutout: '60%',
+      maintainAspectRatio: true,
       plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              const label = context.label || '';
-              const value = context.raw || 0;
-              return `${label}: $${value}`;
-            }
+        datalabels: {
+          formatter: (value) => {
+            return total > 0 ? ((value / total * 100).toFixed(1) + '%') : '0%';
+          },
+          color: '#fff',
+          font: {
+            weight: 'bold',
+            size: 14
           }
+        },
+        legend: {
+          display: false // ← Oculta la leyenda por defecto de Chart.js
         }
       }
-    };
-
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: data,
-      options: options
-    });
+    },
+    plugins: [ChartDataLabels]
   });
+});
 </script>
 
 
