@@ -13,15 +13,12 @@ class Notification(models.Model):
 
     #Consulta 
 
-    from django.db import models
-from django.contrib.auth.models import User
 
 class Consulta(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     consulta = models.TextField()
-    resultado = models.TextField(blank=True, null=True)
+    resultado = models.TextField(null=True, blank=True)  # Aquí se guarda la respuesta automática
     fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.usuario.username} - {self.consulta[:30]}"
-
+        return self.consulta

@@ -11,6 +11,8 @@ from django.utils.timezone import localtime
 from .models import Consulta
 from .forms import ConsultaForm
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+import random
 
 
 def formulario_view(request):
@@ -231,12 +233,26 @@ def historial_consultas(request):
         'query': query or '',
     })
 
-
-
 def procesar_consulta(texto):
-    return f"Respuesta automática para: {texto}"
+    respuestas = [
+        "Lo siento, no pude entender tu consulta.",
+        "Estoy procesando tu solicitud, por favor espera.",
+        "¡Excelente! Estás haciendo una gran pregunta. Déjame investigarlo.",
+        "Tu consulta está en cola, te responderé pronto.",
+        "Aún estoy trabajando en ello. Gracias por tu paciencia."
+    ]
+    
+    # Puedes agregar lógica basada en palabras clave para personalizar más
+    if 'saldo' in texto.lower():
+        return "Tu saldo es de $500."
+    elif 'consulta' in texto.lower():
+        return "Parece que estás buscando información sobre consultas. ¿En qué puedo ayudarte específicamente?"
+    else:
+        # Respuesta aleatoria si no hay coincidencias específicas
+        return random.choice(respuestas)
 
-from django.shortcuts import get_object_or_404
+
+
 
 @login_required
 def eliminar_consulta(request, consulta_id):
