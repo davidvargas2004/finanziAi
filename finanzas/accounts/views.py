@@ -9,6 +9,7 @@ from .models import Notification
 from django.http import JsonResponse
 from django.utils.timezone import localtime
 from .models import Consulta
+from .models import FormularioFinanzas
 from .forms import ConsultaForm
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -22,28 +23,44 @@ def formulario_view(request):
             usuario_id = request.POST.get('usuario_id')
 
             ingresos = float(request.POST.get('ingresos_mensuales') or 0)
-            gastos = {
-                "alimentacion": float(request.POST.get('gasto_alimentacion') or 0),
-                "transporte": float(request.POST.get('gasto_transporte') or 0),
-                "entretenimiento": float(request.POST.get('gasto_entretenimiento') or 0)
-            }
+            gasto_alimentacion = float(request.POST.get('gasto_alimentacion') or 0)
+            gasto_transporte = float(request.POST.get('gasto_transporte') or 0)
+            gasto_entretenimiento = float(request.POST.get('gasto_entretenimiento') or 0)
             meta_ahorro = float(request.POST.get('meta_ahorro') or 0)
-            total_gastos = sum(gastos.values())
+
+            total_gastos = gasto_alimentacion + gasto_transporte + gasto_entretenimiento
             ahorro_mensual = ingresos - total_gastos
 
             contexto = {
                 "usuario_id": usuario_id,
                 "nombre": nombre,
                 "ingresos_mensuales": ingresos,
-                "gastos_mensuales": gastos,
+                "gastos_mensuales": {
+                    "alimentacion": gasto_alimentacion,
+                    "transporte": gasto_transporte,
+                    "entretenimiento": gasto_entretenimiento
+                },
                 "metas_financieras": {"ahorro": meta_ahorro},
                 "ahorro_mensual": ahorro_mensual,
                 "timestamp": datetime.now().isoformat()
             }
 
-            guardar_en_mongo(contexto)
+            # Obtener las recomendaciones
             recomendacion = generate_gemini_recommendation(contexto)
             lineas_recomendaciones = recomendacion.strip().splitlines()
+
+            # Guardar en la base de datos SQLite
+            FormularioFinanzas.objects.create(
+                usuario_id=usuario_id,
+                nombre=nombre,
+                ingresos_mensuales=ingresos,
+                gasto_alimentacion=gasto_alimentacion,
+                gasto_transporte=gasto_transporte,
+                gasto_entretenimiento=gasto_entretenimiento,
+                meta_ahorro=meta_ahorro,
+                ahorro_mensual=ahorro_mensual,
+                recomendaciones=recomendacion
+            )
 
             return render(request, "accounts/resultado.html", {
                 "nombre": nombre,

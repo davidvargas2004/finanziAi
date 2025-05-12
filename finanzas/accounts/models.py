@@ -22,3 +22,19 @@ class Consulta(models.Model):
 
     def __str__(self):
         return self.consulta
+
+
+class FormularioFinanzas(models.Model):
+    usuario_id = models.CharField(max_length=50)
+    nombre = models.CharField(max_length=100)
+    ingresos_mensuales = models.FloatField()
+    gasto_alimentacion = models.FloatField()
+    gasto_transporte = models.FloatField()
+    gasto_entretenimiento = models.FloatField()
+    meta_ahorro = models.FloatField()
+    ahorro_mensual = models.FloatField()
+    recomendaciones = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.nombre} - {self.timestamp}"
