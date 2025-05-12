@@ -1,9 +1,21 @@
 Un sistema web de gestión de finanzas personales desarrollado con el framework Django, que integra la inteligencia artificial de Gemini para automatizar la categorización de gastos, analizar patrones de consumo, ofrecer recomendaciones personalizadas de ahorro/inversión y generar proyecciones financieras inteligentes.
 
+Historial de comandos para activar el proyecto
+- cd finanzas
+- source venv/Scripts/activate
+	- pip install -r requirements.txt
+	- deactivate
+- python manage.py migrate
+- python manage.py runserver
 
 
+Hacer commit 
+- git add
+- git commit -m "nombre_del_commit"
+- git push origin main
 
-➡️➡️➡️➡️➡️➡️SI A LA HORA DE CORRER EL CODIGO NO FUNICONA PONER EL SIGIENTE CODIGO EN SETTINGS.PY
+
+➡️➡️➡️➡️➡️➡️SI A LA HORA DE CORRER EL CODIGO NO FUNICONA PONER EL SIGUIENTE CODIGO EN SETTINGS.PY
 
 """
 Django settings for finanzia project.
