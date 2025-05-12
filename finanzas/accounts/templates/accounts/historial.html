@@ -9,112 +9,76 @@
     <style>
         /* Estilos generales */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f5;
-            color: #444;
+            background-color: #f4f4f9;
         }
 
         .container {
-            width: 85%;
-            max-width: 1000px;
-            margin: 40px auto;
+            width: 80%;
+            margin: 20px auto;
             background-color: #ffffff;
-            padding: 30px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            text-align: center;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
 
         h1, h2 {
-            color: #2e3a59;
-            font-size: 2.5em;
-            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
         }
 
-        h2 {
-            font-size: 1.8em;
-            color: #4c4c89;
-        }
-
-        /* Estilos de los formularios */
+        /* Formulario */
         form {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
         }
 
         input[type="text"], button {
-            padding: 12px;
+            padding: 10px;
             font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        input[type="text"]:focus, button:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
-        }
-
-        input[type="text"] {
-            width: 80%;
-            margin: 0 auto;
-            max-width: 400px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
 
         button {
-            background-color: #3498db;
+            background-color: #4CAF50;
             color: white;
             cursor: pointer;
-            border: none;
         }
 
         button:hover {
-            background-color: #2980b9;
-            transform: scale(1.05);
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            background-color:rgb(69, 149, 160);
         }
 
         /* Estilo de las consultas */
         ul {
             list-style: none;
             padding: 0;
-            margin-top: 20px;
         }
 
         li {
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 10px;
+            margin-bottom: 10px;
             background-color: #f9f9f9;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease, background-color 0.3s ease;
-        }
-
-        li:hover {
-            background-color: #eaf2f8;
-            transform: translateY(-5px);
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
 
         li strong {
-            color: #2e3a59;
-            font-weight: bold;
+            color: #333;
         }
 
         a {
-            color: #e74c3c;
+            color: #d9534f;
             text-decoration: none;
             font-weight: bold;
-            transition: color 0.3s ease;
         }
 
         a:hover {
-            color: #c0392b;
             text-decoration: underline;
         }
 
@@ -123,12 +87,6 @@
             text-align: center;
             font-size: 18px;
             color: #777;
-            font-style: italic;
-        }
-
-        /* Estilo para el contenedor de los formularios */
-        .form-container {
-            margin-bottom: 30px;
         }
     </style>
 </head>
@@ -138,21 +96,17 @@
         <h1>Historial de Consultas</h1>
 
         <!-- Formulario para agregar nuevas consultas -->
-        <div class="form-container">
-            <form method="POST" action="{% url 'historial_consultas' %}">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Enviar consulta</button>
-            </form>
-        </div>
+        <form method="POST" action="{% url 'historial_consultas' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Enviar consulta</button>
+        </form>
 
         <!-- Barra de búsqueda -->
-        <div class="form-container">
-            <form method="GET" action="{% url 'historial_consultas' %}">
-                <input type="text" name="q" value="{{ query }}" placeholder="Buscar consultas">
-                <button type="submit">Buscar</button>
-            </form>
-        </div>
+        <form method="GET" action="{% url 'historial_consultas' %}">
+            <input type="text" name="q" value="{{ query }}" placeholder="Buscar consultas">
+            <button type="submit">Buscar</button>
+        </form>
 
         <!-- Mostrar todas las consultas -->
         <h2>Consultas</h2>

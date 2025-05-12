@@ -1,0 +1,135 @@
+/* Estilo para el cuerpo de la página */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+/* Estilo para el encabezado */
+h2 {
+    text-align: center;
+    color: #007bff;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Estilo para los formularios de búsqueda y consulta */
+form {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Estilo para el campo de búsqueda */
+input[type="text"] {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 250px;
+    box-sizing: border-box;
+}
+
+/* Estilo para el botón de búsqueda */
+button[type="submit"] {
+    padding: 8px 15px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo para el formulario de envío de consulta */
+form button[type="submit"] {
+    background-color: #28a745;
+}
+
+form button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+/* Estilo para la tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Estilo para las celdas */
+td {
+    vertical-align: top;
+}
+
+/* Estilo para los botones de eliminación */
+form button[type="submit"] {
+    background-color: #dc3545;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+form button[type="submit"]:hover {
+    background-color: #c82333;
+}
+
+/* Estilo para mensajes de "sin registros" */
+table td[colspan="4"] {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+}
+
+/* Estilo para el contenedor de formularios */
+form, table {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Espaciado entre los formularios */
+form + form {
+    margin-top: 20px;
+}
+
+/* Estilo para los enlaces (si es necesario) */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

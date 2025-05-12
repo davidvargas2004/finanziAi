@@ -242,16 +242,13 @@ def procesar_consulta(texto):
         "Aún estoy trabajando en ello. Gracias por tu paciencia."
     ]
     
-    # Puedes agregar lógica basada en palabras clave para personalizar más
     if 'saldo' in texto.lower():
         return "Tu saldo es de $500."
     elif 'consulta' in texto.lower():
         return "Parece que estás buscando información sobre consultas. ¿En qué puedo ayudarte específicamente?"
     else:
-        # Respuesta aleatoria si no hay coincidencias específicas
+        # Respuesta aleatoria 
         return random.choice(respuestas)
-
-
 
 
 @login_required
