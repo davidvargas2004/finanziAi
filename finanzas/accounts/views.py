@@ -251,6 +251,9 @@ def procesar_consulta(texto):
         return random.choice(respuestas)
 
 
+        
+
+
 @login_required
 def eliminar_consulta(request, consulta_id):
     consulta = get_object_or_404(Consulta, id=consulta_id, usuario=request.user)
