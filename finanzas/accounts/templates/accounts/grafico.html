@@ -49,17 +49,65 @@
             </header>
 
             <!-- Contenido del gráfico circular -->
-            <div class="dashboard-content">
-                <div class="donut" id="donut-chart" data-total="$0"></div>
-                <div class="legend" id="legend"></div>
-                <div class="inputs">
-                <input type="text" id="label" placeholder="Categoría" />
-                <input type="number" id="value" placeholder="Monto ($)" />
-                <button onclick="addExpense()">Agregar Gasto</button>
-                </div>
-            </div>
-        </main>
-    </div>
+<div class="dashboard-content">
+  <div style="max-width: 500px; margin: auto;">
+    <canvas id="donutChart"></canvas>
+  </div>
+  <div style="margin-top: 20px; text-align: center;">
+    <ul id="legend" style="list-style: none; padding: 0; display: flex; justify-content: center; gap: 20px;">
+      <li><span style="display:inline-block;width:12px;height:12px;background:#ff6384;margin-right:6px;border-radius:2px;"></span> Alimentación</li>
+      <li><span style="display:inline-block;width:12px;height:12px;background:#36a2eb;margin-right:6px;border-radius:2px;"></span> Transporte</li>
+      <li><span style="display:inline-block;width:12px;height:12px;background:#ffce56;margin-right:6px;border-radius:2px;"></span> Entretenimiento</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById('donutChart').getContext('2d');
+
+    const data = {
+    labels: ['Alimentación', 'Transporte', 'Entretenimiento'],
+    datasets: [{
+      data: [
+        parseFloat("{{ alimentacion|default:0 }}"),
+        parseFloat("{{ transporte|default:0 }}"),
+        parseFloat("{{ entretenimiento|default:0 }}")
+      ],
+      backgroundColor: ['#ff6384', '#36a2eb', '#ffce56'],
+      borderWidth: 1,
+    }]
+  };
+
+    const options = {
+      responsive: true,
+      cutout: '60%',
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              return `${label}: $${value}`;
+            }
+          }
+        }
+      }
+    };
+
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: data,
+      options: options
+    });
+  });
+</script>
+
 
     <script src="{% static 'accounts/js/grafico.js' %}"></script>
 

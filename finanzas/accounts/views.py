@@ -268,7 +268,27 @@ def procesar_consulta(texto):
         return random.choice(respuestas)
 
 
-        
+@login_required
+def grafico_view(request):
+    try:
+        datos = FormularioFinanzas.objects.filter(usuario_id=request.user.id).latest('id')
+    except FormularioFinanzas.DoesNotExist:
+        datos = None
+
+    if datos:
+        context = {
+            "alimentacion": datos.gasto_alimentacion,
+            "transporte": datos.gasto_transporte,
+            "entretenimiento": datos.gasto_entretenimiento,
+        }
+    else:
+        context = {
+            "alimentacion": 0,
+            "transporte": 0,
+            "entretenimiento": 0,
+        }
+
+    return render(request, "accounts/grafico.html", context) 
 
 
 @login_required
