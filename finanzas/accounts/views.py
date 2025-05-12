@@ -146,7 +146,7 @@ def signup_view(request):
             )
 
             messages.success(request, 'Account created successfully! Welcome to Finanzia.')
-            return redirect('dashboard')
+            return redirect('login')
         except Exception as e:
             messages.error(request, f'An error occurred: {str(e)}')
 
@@ -244,3 +244,8 @@ def eliminar_consulta(request, consulta_id):
     consulta.delete()
     return redirect('historial_consultas')
 
+def terms_of_service(request):
+    return render(request, 'legal/terms_of_service.html')
+
+def privacy_policy(request):
+    return render(request, 'legal/privacy_policy.html')

@@ -1,3 +1,4 @@
+/* Reset y fuente */
 * {
     margin: 0;
     padding: 0;
@@ -5,22 +6,23 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Layout general con footer al final */
 body {
     background-color: #1a3720;
-    height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .signup-container {
+    flex: 1;
     display: flex;
     width: 900px;
-    height: 600px;
     background-color: #000;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    margin: 40px auto;
 }
 
 .signup-form {
@@ -99,6 +101,12 @@ input[type="password"] {
 a {
     color: #4CAF50;
     text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #76ff94;
+    text-decoration: underline;
 }
 
 button {
@@ -148,6 +156,13 @@ button:hover {
     margin-bottom: 20px;
 }
 
+.signup-footer {
+    text-align: center;
+    font-size: 14px;
+    color: #aaa;
+    padding: 20px 0;
+    background-color: #000;
+}
 
 @media (max-width: 768px) {
     .signup-container {
@@ -155,11 +170,11 @@ button:hover {
         flex-direction: column;
         height: auto;
     }
-    
+
     .signup-image {
         height: 200px;
     }
-    
+
     .form-row {
         flex-direction: column;
         gap: 0;

@@ -79,3 +79,33 @@ document.addEventListener('DOMContentLoaded', function() {
         return re.test(email);
     }
 });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form");
+    const checkbox = document.getElementById("agree_terms");
+    const submitBtn = form.querySelector("button[type='submit']");
+  
+    if (checkbox && submitBtn) {
+      submitBtn.disabled = !checkbox.checked;
+  
+      checkbox.addEventListener("change", function () {
+        submitBtn.disabled = !checkbox.checked;
+        const msg = document.getElementById("terms-msg");
+        if (checkbox.checked && msg) msg.remove();
+      });
+  
+      form.addEventListener("submit", function (e) {
+        if (!checkbox.checked) {
+          e.preventDefault();
+          if (!document.getElementById("terms-msg")) {
+            const msg = document.createElement("div");
+            msg.id = "terms-msg";
+            msg.className = "error-message";
+            msg.innerText = "Debes leer y aceptar los Términos y la Política de Privacidad para continuar.";
+            form.insertBefore(msg, submitBtn);
+          }
+        }
+      });
+    }
+  });
+  
