@@ -10,4 +10,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('signup/', views.signup_view, name='signup'),
     path('password-reset/', views.password_reset_view, name='password_reset'),
+   
+    path('historial/', views.historial_consultas, name='historial_consultas'),
+    path('eliminar/<int:consulta_id>/', views.eliminar_consulta, name='eliminar_consulta'),
 ]

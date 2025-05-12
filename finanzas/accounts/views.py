@@ -8,6 +8,10 @@ from datetime import datetime
 from .models import Notification
 from django.http import JsonResponse
 from django.utils.timezone import localtime
+from .models import Consulta
+from .forms import ConsultaForm
+from django.db.models import Q
+
 
 def formulario_view(request):
     if request.method == 'POST':
@@ -189,3 +193,54 @@ def comparativa_mensual_view(request):
 
 def grafico_view(request):
     return render(request, 'accounts/grafico.html')
+
+
+
+
+#historial_consultas
+
+
+@login_required
+def historial_consultas(request):
+    form = ConsultaForm()
+    consultas = Consulta.objects.filter(usuario=request.user)
+
+    # Búsqueda por palabra clave
+    query = request.GET.get('q')
+    if query:
+        consultas = consultas.filter(
+            Q(consulta__icontains=query) | Q(resultado__icontains=query)
+        )
+
+    # Ordenar de más reciente a más antigua
+    consultas = consultas.order_by('-fecha')
+
+    # Guardar consulta nueva si es POST
+    if request.method == 'POST':
+        form = ConsultaForm(request.POST)
+        if form.is_valid():
+            nueva_consulta = form.save(commit=False)
+            nueva_consulta.usuario = request.user
+            nueva_consulta.resultado = procesar_consulta(nueva_consulta.consulta)
+            nueva_consulta.save()
+            return redirect('historial_consultas')
+
+    return render(request, 'accounts/historial.html', {
+        'form': form,
+        'consultas': consultas,
+        'query': query or '',
+    })
+
+
+
+def procesar_consulta(texto):
+    return f"Respuesta automática para: {texto}"
+
+from django.shortcuts import get_object_or_404
+
+@login_required
+def eliminar_consulta(request, consulta_id):
+    consulta = get_object_or_404(Consulta, id=consulta_id, usuario=request.user)
+    consulta.delete()
+    return redirect('historial_consultas')
+

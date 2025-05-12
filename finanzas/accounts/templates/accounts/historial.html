@@ -1,0 +1,44 @@
+<h2>Historial de Consultas</h2>
+
+<form method="get" action="">
+    <input type="text" name="q" placeholder="Buscar..." value="{{ query }}">
+    <button type="submit">Buscar</button>
+</form>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enviar Consulta</button>
+</form>
+
+<hr>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Fecha y Hora</th>
+            <th>Consulta</th>
+            <th>Respuesta</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in page_obj %}
+        <tr>
+            <td>{{ c.fecha }}</td>
+            <td>{{ c.consulta }}</td>
+            <td>{{ c.resultado|default:"(Sin respuesta)"|linebreaks }}</td>
+            <td>
+                <form method="post" action="{% url 'eliminar_consulta' c.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta consulta?');">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No hay consultas registradas.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
