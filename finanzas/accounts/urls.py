@@ -15,5 +15,10 @@ urlpatterns = [
     path('notifications/read/<int:notif_id>/', views.mark_notification_read, name='mark_notification_read'),
     path('comparativa-mensual/', views.comparativa_mensual_view, name='comparativa_mensual'),
     path('grafico/', views.grafico_view, name='grafico'),
+<<<<<<< HEAD
     
+=======
+    path('terminos/', views.terms_of_service, name='terms_of_service'),
+    path('politica-de-privacidad/', views.privacy_policy, name='privacy_policy'),
+>>>>>>> feature/terms-and-privacy
 ]
