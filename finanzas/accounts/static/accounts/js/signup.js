@@ -1,111 +1,95 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const signupForm = document.querySelector('form');
-    
-    if (signupForm) {
-        signupForm.addEventListener('submit', function(e) {
-            // Remove any existing error messages
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form");
+    const checkbox = document.getElementById("agree_terms");
+    const submitBtn = form.querySelector("button[type='submit']");
+    const fields = ["first_name", "last_name", "email"];
+
+    // 🔁 Restaurar datos
+    fields.forEach(id => {
+        const input = document.getElementById(id);
+        if (input && localStorage.getItem(id)) {
+            input.value = localStorage.getItem(id);
+        }
+    });
+
+    if (form) {
+        form.addEventListener("submit", function (e) {
             const existingErrors = document.querySelectorAll('.error-message');
             existingErrors.forEach(error => error.remove());
-            
-            // Get form values
+
             const firstName = document.getElementById('first_name').value.trim();
             const lastName = document.getElementById('last_name').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
-            const agreeTerms = document.getElementById('agree_terms').checked;
-            
+            const agreeTerms = checkbox.checked;
+
             let hasError = false;
-            
-            // Validate first name
+
             if (!firstName) {
-                createErrorMessage('Please enter your first name');
+                createErrorMessage('Por favor ingresa tu nombre');
                 hasError = true;
             }
-            
-            // Validate last name
             if (!lastName) {
-                createErrorMessage('Please enter your last name');
+                createErrorMessage('Por favor ingresa tu apellido');
                 hasError = true;
             }
-            
-            // Validate email
             if (!email) {
-                createErrorMessage('Please enter your email address');
+                createErrorMessage('Por favor ingresa tu email');
                 hasError = true;
             } else if (!isValidEmail(email)) {
-                createErrorMessage('Please enter a valid email address');
+                createErrorMessage('El email no es válido');
                 hasError = true;
             }
-            
-            // Validate password
             if (!password) {
-                createErrorMessage('Please enter a password');
+                createErrorMessage('Ingresa una contraseña');
                 hasError = true;
             } else if (password.length < 8) {
-                createErrorMessage('Password must be at least 8 characters long');
+                createErrorMessage('La contraseña debe tener mínimo 8 caracteres');
                 hasError = true;
             }
-            
-            // Validate password confirmation
             if (password !== confirmPassword) {
-                createErrorMessage('Passwords do not match');
+                createErrorMessage('Las contraseñas no coinciden');
                 hasError = true;
             }
-            
-            // Validate terms agreement
             if (!agreeTerms) {
-                createErrorMessage('You must agree to the Terms of Service and Privacy Policy');
+                createErrorMessage('Debes aceptar los Términos y la Política de Privacidad para continuar.');
                 hasError = true;
             }
-            
+
             if (hasError) {
                 e.preventDefault();
+            } else {
+                // 🧹 Limpia localStorage si todo está bien
+                fields.forEach(id => localStorage.removeItem(id));
             }
         });
+
+        // 🔁 Limpiar mensaje si se marca el checkbox después
+        checkbox.addEventListener("change", function () {
+            const msg = document.getElementById("terms-msg");
+            if (checkbox.checked && msg) msg.remove();
+        });
     }
-    
+
     function createErrorMessage(message) {
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-message';
         errorDiv.textContent = message;
-        
-        const form = document.querySelector('form');
         form.insertBefore(errorDiv, form.firstChild);
     }
-    
+
     function isValidEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
     }
 });
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("form");
-    const checkbox = document.getElementById("agree_terms");
-    const submitBtn = form.querySelector("button[type='submit']");
-  
-    if (checkbox && submitBtn) {
-      submitBtn.disabled = !checkbox.checked;
-  
-      checkbox.addEventListener("change", function () {
-        submitBtn.disabled = !checkbox.checked;
-        const msg = document.getElementById("terms-msg");
-        if (checkbox.checked && msg) msg.remove();
-      });
-  
-      form.addEventListener("submit", function (e) {
-        if (!checkbox.checked) {
-          e.preventDefault();
-          if (!document.getElementById("terms-msg")) {
-            const msg = document.createElement("div");
-            msg.id = "terms-msg";
-            msg.className = "error-message";
-            msg.innerText = "Debes leer y aceptar los Términos y la Política de Privacidad para continuar.";
-            form.insertBefore(msg, submitBtn);
-          }
-        }
-      });
-    }
-  });
-  
+// 💾 Guardar campos al salir
+window.addEventListener("beforeunload", function () {
+    const fields = ["first_name", "last_name", "email"];
+    fields.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) localStorage.setItem(id, input.value);
+    });
+});
