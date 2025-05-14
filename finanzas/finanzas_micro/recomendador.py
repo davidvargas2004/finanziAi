@@ -2,19 +2,23 @@ import os
 import json
 from datetime import datetime
 from dotenv import load_dotenv
-import google.generativeai as genai
+import cohere
 from pymongo import MongoClient
 
+# Cargar variables de entorno desde .env
 load_dotenv()
 
+# Configuración de MongoDB
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 mongo_client = MongoClient(MONGO_URI)
 mongo_db = mongo_client["finanzas_db"]
 mongo_collection = mongo_db["registros"]
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("models/gemini-1.5-pro")
+# Configuración de Cohere
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+co = cohere.Client(COHERE_API_KEY)
 
+# Generación de recomendaciones usando Cohere (chat)
 def generate_gemini_recommendation(financial_data: dict) -> str:
     prompt = f"""
 Eres un asesor financiero profesional. Analiza los siguientes datos financieros en pesos colombianos:
@@ -31,17 +35,32 @@ Genera exactamente 3 recomendaciones claras y numeradas, cada una en una línea 
 3. ...
     """
     try:
-        response = model.generate_content(prompt)
-        return response.text.strip() if response and response.text else "Recomendación no disponible temporalmente"
+        response = co.chat(
+            model="command-r",
+            message=prompt,
+            temperature=0.7
+        )
+        return response.text.strip()
     except Exception as e:
+        print("Error al generar recomendación:", e)
         return "Recomendación no disponible temporalmente"
-    
-def guardar_en_mongo(data):
-    mongo_collection.insert_one(data)
 
+# Guardar datos en MongoDB
+def guardar_en_mongo(data):
+    try:
+        mongo_collection.insert_one(data)
+        print("Datos guardados en MongoDB correctamente.")
+    except Exception as e:
+        print("Error al guardar en MongoDB:", e)
+
+# Guardar datos en archivo JSON local
 def guardar_json(data):
-    DATA_DIR = "financial_data"
-    os.makedirs(DATA_DIR, exist_ok=True)
-    filename = f"{DATA_DIR}/{data.get('usuario_id', 'anonimo')}_{datetime.now().strftime('%Y%m%d')}.json"
-    with open(filename, 'w') as f:
-        json.dump(data, f, indent=2)
+    try:
+        DATA_DIR = "financial_data"
+        os.makedirs(DATA_DIR, exist_ok=True)
+        filename = f"{DATA_DIR}/{data.get('usuario_id', 'anonimo')}_{datetime.now().strftime('%Y%m%d')}.json"
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=2)
+        print(f"Datos guardados en {filename}")
+    except Exception as e:
+        print("Error al guardar JSON:", e)
