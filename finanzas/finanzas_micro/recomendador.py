@@ -2,23 +2,24 @@ import os
 import json
 from datetime import datetime
 from dotenv import load_dotenv
-import cohere
 from pymongo import MongoClient
+import google.generativeai as genai
 
-# Cargar variables de entorno desde .env
+# Cargar variables de entorno (.env debe tener MONGO_URI y GEMINI_API_KEY)
 load_dotenv()
 
-# Configuración de MongoDB
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+# === CONFIGURACIÓN MONGO ATLAS ===
+MONGO_URI = os.getenv("MONGO_URI")
 mongo_client = MongoClient(MONGO_URI)
 mongo_db = mongo_client["finanzas_db"]
 mongo_collection = mongo_db["registros"]
 
-# Configuración de Cohere
-COHERE_API_KEY = os.getenv("COHERE_API_KEY")
-co = cohere.Client(COHERE_API_KEY)
+# === CONFIGURACIÓN GEMINI ===
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel("models/gemini-1.5-pro")  # Puedes cambiar a "gemini-pro" si ese es tu modelo habilitado
 
-# Generación de recomendaciones usando Cohere (chat)
+# === GENERAR RECOMENDACIONES CON GEMINI ===
 def generate_gemini_recommendation(financial_data: dict) -> str:
     prompt = f"""
 Eres un asesor financiero profesional. Analiza los siguientes datos financieros en pesos colombianos:
@@ -28,32 +29,28 @@ Eres un asesor financiero profesional. Analiza los siguientes datos financieros 
 - Meta de ahorro: {financial_data['metas_financieras'].get('ahorro', 0)}
 - Ahorro mensual actual: {financial_data['ahorro_mensual']}
 
-Genera exactamente 3 recomendaciones claras y numeradas, cada una en una línea separada, con este formato:
+Genera exactamente 3 recomendaciones claras, útiles y numeradas, cada una en una línea separada, con este formato:
 
 1. ...
 2. ...
 3. ...
     """
     try:
-        response = co.chat(
-            model="command-r",
-            message=prompt,
-            temperature=0.7
-        )
-        return response.text.strip()
+        response = model.generate_content(prompt)
+        return response.text.strip() if response and response.text else "Recomendación no disponible temporalmente"
     except Exception as e:
         print("Error al generar recomendación:", e)
         return "Recomendación no disponible temporalmente"
 
-# Guardar datos en MongoDB
+# === GUARDAR EN MONGODB ATLAS ===
 def guardar_en_mongo(data):
     try:
         mongo_collection.insert_one(data)
-        print("Datos guardados en MongoDB correctamente.")
+        print("✅ Datos guardados en MongoDB Atlas.")
     except Exception as e:
-        print("Error al guardar en MongoDB:", e)
+        print("❌ Error al guardar en MongoDB:", e)
 
-# Guardar datos en archivo JSON local
+# === OPCIONAL: GUARDAR EN JSON LOCAL ===
 def guardar_json(data):
     try:
         DATA_DIR = "financial_data"
@@ -61,6 +58,6 @@ def guardar_json(data):
         filename = f"{DATA_DIR}/{data.get('usuario_id', 'anonimo')}_{datetime.now().strftime('%Y%m%d')}.json"
         with open(filename, 'w') as f:
             json.dump(data, f, indent=2)
-        print(f"Datos guardados en {filename}")
+        print(f"📝 Datos guardados en {filename}")
     except Exception as e:
-        print("Error al guardar JSON:", e)
+        print("❌ Error al guardar JSON:", e)
