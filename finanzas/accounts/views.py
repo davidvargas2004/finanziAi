@@ -42,7 +42,7 @@ def formulario_view(request):
                 "Alimentacion": float(request.POST.get('gasto_alimentacion', 0) or 0),
                 "Transporte": float(request.POST.get('gasto_transporte', 0) or 0),
                 "Entretenimiento": float(request.POST.get('gasto_entretenimiento', 0) or 0),
-                "Hogar": float(request.POST.get('gasto_hogar', 0) or 0) # Asegúrate de que este campo exista en tu HTML si lo usas
+                "Hogar": float(request.POST.get('gasto_hogar', 0) or 0) 
             }
             
             meta_ahorro = float(request.POST.get('meta_ahorro', 0) or 0)
@@ -77,17 +77,17 @@ def formulario_view(request):
                 "ahorro_mensual": ahorro_mensual,
                 "timestamp": datetime.now().isoformat()
             }
-
-            # Guardar los datos en MongoDB Atlas
-            guardar_en_mongo(contexto_para_procesamiento)
-
-          
-
-
+            
             # Generar recomendaciones usando Cohere
             # Asegúrate de que 'generate_cohere_recommendation' está importada y existe en recomendador.py
             recomendacion = generate_cohere_recommendation(contexto_para_procesamiento)
             lineas_recomendaciones = recomendacion.strip().splitlines()
+
+            # AÑADIR LA RECOMENDACIÓN AL DICCIONARIO ANTES DE GUARDAR EN MONGODB ATLAS
+            contexto_para_procesamiento["recomendacion_ia"] = recomendacion 
+
+            # Guardar los datos completos (incluyendo la recomendación) en MongoDB Atlas
+            guardar_en_mongo(contexto_para_procesamiento)
 
             # Renderizar la plantilla de resultados con todos los datos necesarios
             return render(request, "accounts/resultado.html", {
@@ -239,10 +239,6 @@ def comparativa_mensual_view(request):
     """
     return render(request, 'accounts/comparativa_mensual.html')
 
-# VISTA DUPLICADA - SE DEBE ELIMINAR O RENOMBRAR UNA DE ELLAS
-# def grafico_view(request):
-#     return render(request, 'accounts/grafico.html')
-
 @login_required
 def historial_consultas(request):
     form = ConsultaForm()
@@ -289,7 +285,7 @@ def procesar_consulta(texto):
 
 
 @login_required
-def grafico_view(request): # Hay una vista 'grafico_view' duplicada, asegúrate de tener una sola
+def grafico_view(request): 
     try:
         # Obtener los datos más recientes del usuario logueado
         datos = FormularioFinanzas.objects.filter(usuario_id=request.user.id).latest('id')
