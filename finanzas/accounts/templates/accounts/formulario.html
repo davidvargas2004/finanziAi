@@ -65,15 +65,11 @@
 
     <form method="POST" action="{% url 'formulario' %}">
         {% csrf_token %}
-
-        <label for="usuario_id">ID Usuario:</label>
-        <input type="text" id="usuario_id" name="usuario_id">
-
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required>
-
         <label for="ingresos">Ingresos Mensuales:</label>
         <input type="number" id="ingresos" name="ingresos_mensuales" step="0.01" required>
+
+<label for="gasto_hogar">Gasto en el Hogar:</label>
+<input type="number" id="gasto_hogar" name="gasto_hogar" step="0.01">
 
         <label for="gasto_alimentacion">Gasto en Alimentación:</label>
         <input type="number" id="gasto_alimentacion" name="gasto_alimentacion" step="0.01">
@@ -88,6 +84,12 @@
         <input type="number" id="meta_ahorro" name="meta_ahorro" step="0.01">
 
         <button type="submit">Enviar</button>
+        <a href="{% url 'dashboard' %}">
+    <button type="button" style="margin-top: 1rem; background-color: #007bff; color: white; padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer;">
+        Volver al Dashboard
+    </button>
+</a>
+
     </form>
 </body>
 </html>
