@@ -1,85 +1,119 @@
-from django.shortcuts import render, redirect
+# accounts/views.py (VERSIÓN UNIFICADA Y CORREGIDA)
+
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from finanzas_micro.recomendador import generate_gemini_recommendation, guardar_en_mongo
+# Asegúrate de que esta importación sea correcta y apunte a tu archivo recomendador.py
+# Y que 'generate_cohere_recommendation' sea la función que usas para la IA
+from finanzas_micro.recomendador import generate_cohere_recommendation, guardar_en_mongo
 from datetime import datetime
-from .models import Notification
 from django.http import JsonResponse
 from django.utils.timezone import localtime
-from .models import Consulta
-from .models import FormularioFinanzas
-from .forms import ConsultaForm
-from django.db.models import Q
-from django.shortcuts import get_object_or_404
 import random
 
+# Importa tus modelos y formularios adicionales
+from .models import Notification, Consulta, FormularioFinanzas
+from .forms import ConsultaForm
+from django.db.models import Q
 
+
+@login_required # Esta vista requiere que el usuario esté logueado
 def formulario_view(request):
+    """
+    Vista para manejar el formulario de ingresos y gastos del usuario.
+    Procesa los datos, calcula métricas financieras, guarda en MongoDB Atlas,
+    y genera recomendaciones de IA (Cohere).
+    """
     if request.method == 'POST':
         try:
-            nombre = request.POST.get('nombre')
-            usuario_id = request.POST.get('usuario_id')
+            usuario = request.user
+            # Usar el nombre completo o el username del usuario logueado
+            nombre = usuario.get_full_name() or usuario.username
+            usuario_id = str(usuario.id)
 
-            ingresos = float(request.POST.get('ingresos_mensuales') or 0)
-            gasto_alimentacion = float(request.POST.get('gasto_alimentacion') or 0)
-            gasto_transporte = float(request.POST.get('gasto_transporte') or 0)
-            gasto_entretenimiento = float(request.POST.get('gasto_entretenimiento') or 0)
-            meta_ahorro = float(request.POST.get('meta_ahorro') or 0)
+            # Obtener datos del formulario y convertirlos a float
+            ingresos = float(request.POST.get('ingresos_mensuales', 0) or 0)
+            
+            # Recopilar gastos por categoría con nombres de claves consistentes
+            # (Puedes usar camelCase o snake_case, pero sé consistente con el prompt de la IA)
+            gastos = {
+                "Alimentacion": float(request.POST.get('gasto_alimentacion', 0) or 0),
+                "Transporte": float(request.POST.get('gasto_transporte', 0) or 0),
+                "Entretenimiento": float(request.POST.get('gasto_entretenimiento', 0) or 0),
+                "Hogar": float(request.POST.get('gasto_hogar', 0) or 0) # Asegúrate de que este campo exista en tu HTML si lo usas
+            }
+            
+            meta_ahorro = float(request.POST.get('meta_ahorro', 0) or 0)
 
-            total_gastos = gasto_alimentacion + gasto_transporte + gasto_entretenimiento
+            # Calcular el total de gastos sumando los valores del diccionario
+            total_gastos = sum(gastos.values())
             ahorro_mensual = ingresos - total_gastos
 
-            contexto = {
+            # Preparar los datos de distribución de gastos para la tabla HTML
+            distribucion_gastos_para_tabla = []
+            if ingresos > 0:
+                for categoria, valor in gastos.items():
+                    porcentaje = (valor / ingresos) * 100
+                    distribucion_gastos_para_tabla.append({
+                        'categoria': categoria,
+                        'porcentaje': f"{porcentaje:.2f}"
+                    })
+            else:
+                for categoria, _ in gastos.items():
+                    distribucion_gastos_para_tabla.append({
+                        'categoria': categoria,
+                        'porcentaje': "0.00"
+                    })
+
+            # Datos para guardar en MongoDB Atlas y pasar a la API de Cohere
+            contexto_para_procesamiento = {
                 "usuario_id": usuario_id,
                 "nombre": nombre,
                 "ingresos_mensuales": ingresos,
-                "gastos_mensuales": {
-                    "alimentacion": gasto_alimentacion,
-                    "transporte": gasto_transporte,
-                    "entretenimiento": gasto_entretenimiento
-                },
+                "gastos_mensuales": gastos, # Pasamos el diccionario completo de gastos por categoría
                 "metas_financieras": {"ahorro": meta_ahorro},
                 "ahorro_mensual": ahorro_mensual,
                 "timestamp": datetime.now().isoformat()
             }
 
-            # Obtener las recomendaciones
-            recomendacion = generate_gemini_recommendation(contexto)
+            # Guardar los datos en MongoDB Atlas
+            guardar_en_mongo(contexto_para_procesamiento)
+
+          
+
+
+            # Generar recomendaciones usando Cohere
+            # Asegúrate de que 'generate_cohere_recommendation' está importada y existe en recomendador.py
+            recomendacion = generate_cohere_recommendation(contexto_para_procesamiento)
             lineas_recomendaciones = recomendacion.strip().splitlines()
 
-            # Guardar en la base de datos SQLite
-            FormularioFinanzas.objects.create(
-                usuario_id=usuario_id,
-                nombre=nombre,
-                ingresos_mensuales=ingresos,
-                gasto_alimentacion=gasto_alimentacion,
-                gasto_transporte=gasto_transporte,
-                gasto_entretenimiento=gasto_entretenimiento,
-                meta_ahorro=meta_ahorro,
-                ahorro_mensual=ahorro_mensual,
-                recomendaciones=recomendacion
-            )
-
+            # Renderizar la plantilla de resultados con todos los datos necesarios
             return render(request, "accounts/resultado.html", {
                 "nombre": nombre,
                 "total_gastos": total_gastos,
                 "ahorro_mensual": ahorro_mensual,
                 "meta_ahorro": meta_ahorro,
+                "distribucion_gastos": distribucion_gastos_para_tabla, # Para la tabla de porcentajes
                 "lineas_recomendaciones": lineas_recomendaciones
             })
 
+        except ValueError:
+            messages.error(request, 'Por favor, ingresa solo números válidos para los ingresos, gastos y metas.')
+            return render(request, "accounts/formulario.html", {'post_data': request.POST}) 
         except Exception as e:
-            print("ERROR:", e)
-            return render(request, "accounts/formulario.html", {
-                "error": "Error al procesar el formulario. Asegúrate de ingresar valores válidos."
-            })
+            print(f"ERROR GENERAL al procesar el formulario en formulario_view: {e}")
+            messages.error(request, f'Ocurrió un error inesperado al procesar el formulario. Por favor, inténtalo de nuevo. Detalles: {e}')
+            return render(request, "accounts/formulario.html", {})
 
     return render(request, "accounts/formulario.html")
 
 
 def login_view(request):
+    """
+    Vista para manejar el inicio de sesión de usuarios.
+    """
     if request.user.is_authenticated:
         return redirect('dashboard')
 
@@ -95,40 +129,40 @@ def login_view(request):
                 User = get_user_model()
                 username = User.objects.get(email=email).username
                 user = authenticate(request, username=username, password=password)
-            except:
+            except User.DoesNotExist: # Captura la excepción específica
                 user = None
 
         if user is not None:
             login(request, user)
-
-            # Crear notificación al iniciar sesión
-            Notification.objects.create(
-                user=user,
-                message="Has iniciado sesión correctamente."
-            )
-
+            Notification.objects.create(user=user, message="Has iniciado sesión correctamente.")
             if not remember_me:
                 request.session.set_expiry(0)
             return redirect('dashboard')
         else:
-            messages.error(request, 'Invalid email or password. Please try again.')
+            messages.error(request, 'Email o contraseña inválidos. Por favor, inténtalo de nuevo.')
 
     return render(request, 'accounts/login.html')
 
-
 @login_required
 def dashboard_view(request):
+    """
+    Vista del dashboard principal para usuarios autenticados.
+    """
     return render(request, 'accounts/dashboard.html')
 
-
 def logout_view(request):
+    """
+    Vista para cerrar la sesión del usuario.
+    """
     logout(request)
     return redirect('login')
 
-
 def signup_view(request):
+    """
+    Vista para el registro de nuevos usuarios.
+    """
     if request.user.is_authenticated:
-        messages.info(request, 'You are already registered and logged in.')
+        messages.info(request, 'Ya estás registrado e has iniciado sesión.')
         return redirect('dashboard')
 
     context = {}
@@ -141,38 +175,35 @@ def signup_view(request):
         confirm_password = request.POST.get('confirm_password')
 
         if password != confirm_password:
-            messages.error(request, 'Passwords do not match.')
+            messages.error(request, 'Las contraseñas no coinciden.')
             return render(request, 'accounts/signup.html', context)
 
         if User.objects.filter(email=email).exists():
+            messages.error(request, 'Este email ya está registrado. Por favor, inicia sesión o usa otro email.')
             context['email_exists'] = True
             return render(request, 'accounts/signup.html', context)
 
         try:
             user = User.objects.create_user(
-                username=email,
+                username=email, # Usar el email como username para la creación
                 email=email,
                 password=password,
                 first_name=first_name,
                 last_name=last_name
             )
             login(request, user)
-
-            # Crear notificación al registrarse
-            Notification.objects.create(
-                user=user,
-                message="Bienvenido a Finanzia, tu cuenta ha sido creada."
-            )
-
-            messages.success(request, 'Account created successfully! Welcome to Finanzia.')
-            return redirect('login')
+            Notification.objects.create(user=user, message="Bienvenido a Finanzia, tu cuenta ha sido creada.")
+            messages.success(request, '¡Cuenta creada exitosamente! Bienvenido a Finanzia.')
+            return redirect('dashboard')
         except Exception as e:
-            messages.error(request, f'An error occurred: {str(e)}')
+            messages.error(request, f'Ocurrió un error al registrar la cuenta: {str(e)}')
 
     return render(request, 'accounts/signup.html', context)
 
-
 def password_reset_view(request):
+    """
+    Vista para la página de restablecimiento de contraseña (funcionalidad no implementada aquí, es solo un placeholder).
+    """
     return render(request, 'accounts/password_reset.html')
 
 
@@ -190,7 +221,6 @@ def notifications_view(request):
     ]
     return JsonResponse({'notifications': data})
 
-
 @login_required
 def mark_notification_read(request, notif_id):
     try:
@@ -201,7 +231,6 @@ def mark_notification_read(request, notif_id):
     except Notification.DoesNotExist:
         return JsonResponse({'status': 'error'}, status=404)
 
-
 def comparativa_mensual_view(request):
     """
     Vista simple que renderiza el template de comparativa mensual.
@@ -210,31 +239,23 @@ def comparativa_mensual_view(request):
     """
     return render(request, 'accounts/comparativa_mensual.html')
 
-def grafico_view(request):
-    return render(request, 'accounts/grafico.html')
-
-
-
-
-#historial_consultas
-
+# VISTA DUPLICADA - SE DEBE ELIMINAR O RENOMBRAR UNA DE ELLAS
+# def grafico_view(request):
+#     return render(request, 'accounts/grafico.html')
 
 @login_required
 def historial_consultas(request):
     form = ConsultaForm()
     consultas = Consulta.objects.filter(usuario=request.user)
 
-    # Búsqueda por palabra clave
     query = request.GET.get('q')
     if query:
         consultas = consultas.filter(
             Q(consulta__icontains=query) | Q(resultado__icontains=query)
         )
 
-    # Ordenar de más reciente a más antigua
     consultas = consultas.order_by('-fecha')
 
-    # Guardar consulta nueva si es POST
     if request.method == 'POST':
         form = ConsultaForm(request.POST)
         if form.is_valid():
@@ -264,13 +285,13 @@ def procesar_consulta(texto):
     elif 'consulta' in texto.lower():
         return "Parece que estás buscando información sobre consultas. ¿En qué puedo ayudarte específicamente?"
     else:
-        # Respuesta aleatoria 
         return random.choice(respuestas)
 
 
 @login_required
-def grafico_view(request):
+def grafico_view(request): # Hay una vista 'grafico_view' duplicada, asegúrate de tener una sola
     try:
+        # Obtener los datos más recientes del usuario logueado
         datos = FormularioFinanzas.objects.filter(usuario_id=request.user.id).latest('id')
     except FormularioFinanzas.DoesNotExist:
         datos = None
@@ -280,16 +301,18 @@ def grafico_view(request):
             "alimentacion": datos.gasto_alimentacion,
             "transporte": datos.gasto_transporte,
             "entretenimiento": datos.gasto_entretenimiento,
+            # Asegúrate de incluir 'gasto_hogar' aquí si lo estás usando en tu modelo
+            # "hogar": datos.gasto_hogar,
         }
     else:
         context = {
             "alimentacion": 0,
             "transporte": 0,
             "entretenimiento": 0,
+            # "hogar": 0,
         }
 
     return render(request, "accounts/grafico.html", context) 
-
 
 @login_required
 def eliminar_consulta(request, consulta_id):
