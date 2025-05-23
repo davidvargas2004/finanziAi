@@ -1,1 +1,1 @@
-from finanzas_micro.recomendador import generate_gemini_recommendation
+from finanzas_micro.recomendador import generate_cohere_recommendation
