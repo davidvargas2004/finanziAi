@@ -5,39 +5,45 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-# Asegúrate de que esta importación sea correcta y apunte a tu archivo recomendador.py
-# Y que 'generate_cohere_recommendation' sea la función que usas para la IA
 from finanzas_micro.recomendador import generate_cohere_recommendation, guardar_en_mongo
 from datetime import datetime
 from django.http import JsonResponse
 from django.utils.timezone import localtime
 import random
 
-# Importa tus modelos y formularios adicionales
+
 from .models import Notification, Consulta, FormularioFinanzas
 from .forms import ConsultaForm
 from django.db.models import Q
 
 
-@login_required # Esta vista requiere que el usuario esté logueado
+@login_required 
 def formulario_view(request):
     """
     Vista para manejar el formulario de ingresos y gastos del usuario.
     Procesa los datos, calcula métricas financieras, guarda en MongoDB Atlas,
     y genera recomendaciones de IA (Cohere).
     """
+    
+    # --- Lógica para obtener el nombre del usuario siempre, antes del POST/GET ---
+    usuario = request.user
+    nombre = usuario.get_full_name() or usuario.username
+    
+    # Prepara el contexto inicial con el nombre del usuario
+    context = {
+        'nombre': nombre,
+        'error': None, # Por defecto no hay error
+    }
+    # --- Fin de la lógica para obtener el nombre ---
+
     if request.method == 'POST':
         try:
-            usuario = request.user
-            # Usar el nombre completo o el username del usuario logueado
-            nombre = usuario.get_full_name() or usuario.username
             usuario_id = str(usuario.id)
 
             # Obtener datos del formulario y convertirlos a float
             ingresos = float(request.POST.get('ingresos_mensuales', 0) or 0)
             
             # Recopilar gastos por categoría con nombres de claves consistentes
-            # (Puedes usar camelCase o snake_case, pero sé consistente con el prompt de la IA)
             gastos = {
                 "Alimentacion": float(request.POST.get('gasto_alimentacion', 0) or 0),
                 "Transporte": float(request.POST.get('gasto_transporte', 0) or 0),
@@ -70,7 +76,7 @@ def formulario_view(request):
             # Datos para guardar en MongoDB Atlas y pasar a la API de Cohere
             contexto_para_procesamiento = {
                 "usuario_id": usuario_id,
-                "nombre": nombre,
+                "nombre": nombre, # El nombre ya está disponible aquí
                 "ingresos_mensuales": ingresos,
                 "gastos_mensuales": gastos, # Pasamos el diccionario completo de gastos por categoría
                 "metas_financieras": {"ahorro": meta_ahorro},
@@ -79,7 +85,6 @@ def formulario_view(request):
             }
             
             # Generar recomendaciones usando Cohere
-            # Asegúrate de que 'generate_cohere_recommendation' está importada y existe en recomendador.py
             recomendacion = generate_cohere_recommendation(contexto_para_procesamiento)
             lineas_recomendaciones = recomendacion.strip().splitlines()
 
@@ -101,13 +106,22 @@ def formulario_view(request):
 
         except ValueError:
             messages.error(request, 'Por favor, ingresa solo números válidos para los ingresos, gastos y metas.')
-            return render(request, "accounts/formulario.html", {'post_data': request.POST}) 
+            # Si hay un error de validación, se debe re-renderizar el formulario
+            # y pasar los datos POST para que los campos se pre-rellenen.
+            # Asegúrate de pasar 'nombre' también en este caso.
+            context['post_data'] = request.POST
+            context['error'] = 'Por favor, ingresa solo números válidos para los ingresos, gastos y metas.'
+            return render(request, "accounts/formulario.html", context) 
         except Exception as e:
             print(f"ERROR GENERAL al procesar el formulario en formulario_view: {e}")
             messages.error(request, f'Ocurrió un error inesperado al procesar el formulario. Por favor, inténtalo de nuevo. Detalles: {e}')
-            return render(request, "accounts/formulario.html", {})
+            # Si hay un error general, re-renderizar el formulario y pasar 'nombre'.
+            context['error'] = f'Ocurrió un error inesperado al procesar el formulario. Por favor, inténtalo de nuevo. Detalles: {e}'
+            return render(request, "accounts/formulario.html", context)
 
-    return render(request, "accounts/formulario.html")
+    # Si el método es GET (o si llegamos aquí después de un POST con errores no manejados por las excepciones anteriores)
+    # se renderiza el formulario, y el 'nombre' ya está en el 'context' inicial.
+    return render(request, "accounts/formulario.html", context)
 
 
 def login_view(request):
