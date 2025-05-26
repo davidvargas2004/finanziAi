@@ -45,7 +45,7 @@
         }
 
         button {
-            background-color: #4CAF50;
+            background-color:rgb(76, 160, 175);
             color: white;
             cursor: pointer;
         }
@@ -117,7 +117,12 @@
                         <strong>Consulta:</strong> {{ consulta.consulta }} <br>
                         <strong>Resultado:</strong> {{ consulta.resultado }} <br>
                         <strong>Fecha:</strong> {{ consulta.fecha }} <br>
-                        <a href="{% url 'eliminar_consulta' consulta.id %}">Eliminar</a>
+                      <form method="POST" action="{% url 'eliminar_consulta' consulta.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta consulta?');" style="background-color: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
+        Eliminar
+    </button>
+</form>
                     </li>
                 {% endfor %}
             </ul>

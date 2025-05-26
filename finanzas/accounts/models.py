@@ -38,3 +38,18 @@ class FormularioFinanzas(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - {self.timestamp}"
+    
+
+  
+
+class RegistroFinanciero(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    total_gastos = models.DecimalField(max_digits=12, decimal_places=2)
+    ahorro_mensual = models.DecimalField(max_digits=12, decimal_places=2)
+    meta_ahorro = models.DecimalField(max_digits=12, decimal_places=2)
+
+class GastoCategoria(models.Model):
+    registro = models.ForeignKey(RegistroFinanciero, related_name='categorias', on_delete=models.CASCADE)
+    categoria = models.CharField(max_length=100)
+    porcentaje = models.DecimalField(max_digits=5, decimal_places=2)
+

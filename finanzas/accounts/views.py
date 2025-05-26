@@ -335,3 +335,44 @@ def terms_of_service(request):
 
 def privacy_policy(request):
     return render(request, 'legal/privacy_policy.html')
+
+
+#pdf generation view
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from .models import RegistroFinanciero, GastoCategoria
+import tempfile
+
+def generar_pdf(request):
+    usuario_id = request.user.id
+
+    try:
+        registro = RegistroFinanciero.objects.get(usuario_id=usuario_id)
+    except RegistroFinanciero.DoesNotExist:
+        return HttpResponse("No hay datos registrados.", status=404)
+
+    categorias = GastoCategoria.objects.filter(registro=registro)
+
+    
+    # Imprimir para depuración
+    print(f"Registro encontrado: {registro}")
+
+    context = {
+        'total_gastos': registro.total_gastos,
+        'ahorro_mensual': registro.ahorro_mensual,
+        'meta_ahorro': registro.meta_ahorro,
+        'distribucion': [
+            {'categoria': c.categoria, 'porcentaje': c.porcentaje} for c in categorias
+        ]
+    }
+
+    html_string = render_to_string("reporte_pdf.html", context)
+
+    with tempfile.NamedTemporaryFile(delete=True) as output:
+        HTML(string=html_string).write_pdf(output.name)
+        output.seek(0)
+        response = HttpResponse(output.read(), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="reporte_financiero.pdf"'
+        return response
+

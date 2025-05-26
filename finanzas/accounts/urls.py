@@ -17,4 +17,5 @@ urlpatterns = [
     path('grafico/', views.grafico_view, name='grafico'),
     path('terminos/', views.terms_of_service, name='terms_of_service'),
     path('politica-de-privacidad/', views.privacy_policy, name='privacy_policy'),
+    path('reporte/pdf/', views.generar_pdf, name='generar_pdf'),
 ]
