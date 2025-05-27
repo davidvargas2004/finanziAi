@@ -1,28 +1,17 @@
-"""
-URL configuration for finanzia project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
+from django.conf import settings # Necesario para DEBUG y static
+from django.conf.urls.static import static # Necesario para static
 from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
-    path('', RedirectView.as_view(url='accounts/login/', permanent=False)),
-     path('', include('accounts.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('accounts/', include('accounts.urls')), # Incluye las URLs de tu app 'accounts'
+    path('', RedirectView.as_view(url='/accounts/login/', permanent=False)), # Redirige la raíz a la página de login de accounts
+]
+
+# Servir archivos estáticos durante el desarrollo (DEBUG=True)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # Si también usas archivos subidos por usuarios (MEDIA_FILES):
+    # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
