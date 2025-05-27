@@ -1,10 +1,15 @@
 from django.urls import path
-from . import views
+from . import views 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 urlpatterns = [
+   
     path('formulario/', views.formulario_view, name='formulario'),
-    path('procesar-formulario/', views.formulario_view, name='procesar_formulario'),
-    path('login/', views.login_view, name='login'),
+    path('procesar-formulario/', views.formulario_view, name='procesar_formulario'), 
+    path('login/', views.login_view, name='login'), 
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.signup_view, name='signup'),
     path('password-reset/', views.password_reset_view, name='password_reset'),
@@ -18,4 +23,8 @@ urlpatterns = [
     path('terminos/', views.terms_of_service, name='terms_of_service'),
     path('politica-de-privacidad/', views.privacy_policy, name='privacy_policy'),
     path('reporte/pdf/', views.generar_pdf, name='generar_pdf'),
+
+    # Nuevas URLs para la obtención y refresco de tokens JWT
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
