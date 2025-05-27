@@ -1,556 +1,589 @@
 <title>🚀 Tu Asistente Financiero Personal</title>
- <style>
+<style>
   :root {
-  --primary-color: #667eea;
-  --secondary-color: #764ba2;
-  --background-color: #f0f4f8;
-  --card-background: #ffffff;
-  --text-color: #333;
-  --label-color: #555;
-  --border-color: #d1d9e6;
-  --error-bg: #ffebee;
-  --error-text: #c62828;
-  --success-color: #4CAF50;
-  --super-meta-grad-start: #ff9a9e;
-  --super-meta-grad-end: #fad0c4;
-  --super-meta-text: #5c2828;
-  --super-meta-text-strong: #b74b4f;
-  --super-meta-border: #f7c5bb;
-  --super-meta-focus: #ff6b6b;
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --background-color: #f0f4f8;
+    --card-background: #ffffff;
+    --text-color: #333;
+    --label-color: #555;
+    --border-color: #d1d9e6;
+    --error-bg: #ffebee;
+    --error-text: #c62828;
+    --success-color: #4CAF50;
+    --super-meta-grad-start: #ff9a9e;
+    --super-meta-grad-end: #fad0c4;
+    --super-meta-text: #5c2828;
+    --super-meta-text-strong: #b74b4f;
+    --super-meta-border: #f7c5bb;
+    --super-meta-focus: #ff6b6b;
   }
 
   body {
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  padding: 2rem;
-  background-color: var(--background-color);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: var(--text-color);
-  min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 2rem;
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-color);
+    min-height: 100vh;
   }
 
   h2 {
-  color: #2c3e50;
-  margin-bottom: 2rem;
-  font-weight: 700;
-  text-align: center;
-  font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    text-align: center;
+    font-size: 2.2rem;
   }
 
   form {
-  background-color: var(--card-background);
-  padding: 2.5rem 3rem;
-  border-radius: 16px;
-  max-width: 600px;
-  width: 100%;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
-  border: 1px solid var(--border-color);
-  margin-bottom: 3rem;
+    background-color: var(--card-background);
+    padding: 2.5rem 3rem;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--border-color);
+    margin-bottom: 3rem;
   }
 
   label {
-  font-weight: 600;
-  color: var(--label-color);
-  display: block;
-  margin-bottom: 0.6rem;
-  font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--label-color);
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
   }
 
   .input-group {
-  position: relative;
-  margin-bottom: 1.8rem;
+    position: relative;
+    margin-bottom: 1.8rem;
   }
 
   .input-group i.fa-input-icon {
-  /* Clase específica para iconos de input */
-  position: absolute;
-  left: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9ab;
-  font-size: 0.9rem;
-  pointer-events: none;
+    /* Clase específica para iconos de input */
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ab;
+    font-size: 0.9rem;
+    pointer-events: none;
   }
 
   input[type="text"],
   input[type="number"] {
-  width: 100%;
-  padding: 0.85rem;
-  padding-left: 40px;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  font-size: 1rem;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    padding: 0.85rem;
+    padding-left: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
   input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.25);
-  outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.25);
+    outline: none;
   }
 
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
   }
 
   input[type=number] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
   }
 
   button,
   .button-style {
-  /* Clase genérica para botones */
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: white;
-  border: none;
-  padding: 0.9rem 2.2rem;
-  font-size: 1.15rem;
-  font-weight: 600;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background-position 0.5s ease;
-  display: block;
-  width: 100%;
-  margin-top: 1.5rem;
-  background-size: 200% auto;
-  text-align: center;
-  text-decoration: none;
-  /* Para si se usa <a> como botón */
+    /* Clase genérica para botones */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    border: none;
+    padding: 0.9rem 2.2rem;
+    font-size: 1.15rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-position 0.5s ease;
+    display: block;
+    width: 100%;
+    margin-top: 1.5rem;
+    background-size: 200% auto;
+    text-align: center;
+    text-decoration: none;
+    /* Para si se usa <a> como botón */
   }
 
   button:hover,
   .button-style:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  background-position: right center;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    background-position: right center;
   }
 
   .error-message {
-  background-color: var(--error-bg);
-  color: var(--error-text);
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #ef9a9a;
-  text-align: center;
-  font-weight: 500;
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #ef9a9a;
+    text-align: center;
+    font-weight: 500;
   }
 
   /* Super Meta Card 3D */
   .super-meta-card {
-  background: linear-gradient(135deg, var(--super-meta-grad-start) 0%, var(--super-meta-grad-end) 100%);
-  color: var(--super-meta-text);
-  padding: 2.5rem;
-  border-radius: 20px;
-  max-width: 550px;
-  width: 100%;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  margin-top: 2rem;
-  transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease;
-  border: 1px solid var(--super-meta-border);
+    background: linear-gradient(135deg, var(--super-meta-grad-start) 0%, var(--super-meta-grad-end) 100%);
+    color: var(--super-meta-text);
+    padding: 2.5rem;
+    border-radius: 20px;
+    max-width: 550px;
+    width: 100%;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-top: 2rem;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease;
+    border: 1px solid var(--super-meta-border);
   }
 
   .super-meta-card:hover {
-  transform: perspective(1000px) rotateY(5deg) scale(1.03);
-  box-shadow: 0 20px 40px rgba(255, 154, 158, 0.3), 0 10px 20px rgba(0, 0, 0, 0.15);
+    transform: perspective(1000px) rotateY(5deg) scale(1.03);
+    box-shadow: 0 20px 40px rgba(255, 154, 158, 0.3), 0 10px 20px rgba(0, 0, 0, 0.15);
   }
 
   .super-meta-card h3 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-top: 0;
-  margin-bottom: 0.8rem;
-  color: var(--super-meta-text-strong);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    color: var(--super-meta-text-strong);
   }
 
   .super-meta-card p {
-  font-size: 1rem;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
   }
 
   .super-meta-card .input-group {
-  margin-bottom: 1rem;
-  /* Reducido para agrupar input y botón */
+    margin-bottom: 1rem;
+    /* Reducido para agrupar input y botón */
   }
 
   .super-meta-card .input-group label {
-  color: var(--super-meta-text-strong);
-  /* Etiqueta destacada */
+    color: var(--super-meta-text-strong);
+    /* Etiqueta destacada */
   }
 
   .super-meta-card input[type="number"] {
-  background-color: rgba(255, 255, 255, 0.8);
-  border-color: var(--super-meta-border);
-  color: var(--super-meta-text);
-  font-weight: 600;
-  margin-bottom: 1rem;
-  /* Espacio antes del botón consultar */
+    background-color: rgba(255, 255, 255, 0.8);
+    border-color: var(--super-meta-border);
+    color: var(--super-meta-text);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    /* Espacio antes del botón consultar */
   }
 
   .super-meta-card input[type="number"]::placeholder {
-  color: #a87073;
+    color: #a87073;
   }
 
   .super-meta-card input:focus {
-  border-color: var(--super-meta-focus);
-  box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.3);
+    border-color: var(--super-meta-focus);
+    box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.3);
   }
 
   .button-consultar {
-  /* Estilo específico para el botón de consulta */
-  background: var(--super-meta-text-strong);
-  font-size: 1rem;
-  padding: 0.7rem 1.5rem;
-  margin-top: 0.5rem;
-  /* Menos margen superior */
-  width: auto;
-  /* Ancho automático */
-  display: inline-block;
-  /* Para que no ocupe todo el ancho */
+    /* Estilo específico para el botón de consulta */
+    background: var(--super-meta-text-strong);
+    font-size: 1rem;
+    padding: 0.7rem 1.5rem;
+    margin-top: 0.5rem;
+    /* Menos margen superior */
+    width: auto;
+    /* Ancho automático */
+    display: inline-block;
+    /* Para que no ocupe todo el ancho */
   }
 
   .button-consultar:hover {
-  background: var(--super-meta-text);
+    background: var(--super-meta-text);
   }
 
   /* Modal Styles (Genérico) */
   .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.65);
-  /* Un poco más oscuro */
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  backdrop-filter: blur(6px);
-  /* Aumento del blur */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.65);
+    /* Un poco más oscuro */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    backdrop-filter: blur(6px);
+    /* Aumento del blur */
   }
 
   .modal-overlay.active {
-  display: flex;
-  opacity: 1;
+    display: flex;
+    opacity: 1;
   }
 
   .modal-content {
-  background-color: var(--card-background);
-  padding: 2.5rem;
-  border-radius: 16px;
-  max-width: 600px;
-  width: 90%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
-  /* Sombra más notoria */
-  text-align: center;
-  transform: scale(0.9) translateY(20px);
-  /* Efecto de entrada desde abajo */
-  transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.4s ease;
-  opacity: 0;
-  /* Para la transición de entrada */
+    background-color: var(--card-background);
+    padding: 2.5rem;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    /* Sombra más notoria */
+    text-align: center;
+    transform: scale(0.9) translateY(20px);
+    /* Efecto de entrada desde abajo */
+    transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.4s ease;
+    opacity: 0;
+    /* Para la transición de entrada */
   }
 
   .modal-overlay.active .modal-content {
-  transform: scale(1) translateY(0);
-  opacity: 1;
+    transform: scale(1) translateY(0);
+    opacity: 1;
   }
 
   .modal-content h4 {
-  font-size: 1.7rem;
-  /* Un poco más grande */
-  color: var(--secondary-color);
-  margin-top: 0;
-  margin-bottom: 1.2rem;
+    font-size: 1.7rem;
+    /* Un poco más grande */
+    color: var(--secondary-color);
+    margin-top: 0;
+    margin-bottom: 1.2rem;
   }
 
   .modal-content p {
-  font-size: 1.05rem;
-  /* Ligeramente más grande */
-  color: var(--label-color);
-  margin-bottom: 1.8rem;
-  line-height: 1.7;
-  /* Mejor espaciado */
+    font-size: 1.05rem;
+    /* Ligeramente más grande */
+    color: var(--label-color);
+    margin-bottom: 1.8rem;
+    line-height: 1.7;
   }
 
   .modal-links {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 2.2rem;
-  text-align: left;
-  /* Alinear enlaces a la izquierda para mejor lectura */
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2.2rem;
+    text-align: left;
+    /* Alinear enlaces a la izquierda para mejor lectura */
   }
 
   .modal-links li {
-  margin-bottom: 1rem;
-  /* Más espacio entre enlaces */
+    margin-bottom: 1rem;
+    /* Más espacio entre enlaces */
   }
 
   .modal-links a {
-  color: var(--primary-color);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease, background-color 0.3s ease;
-  display: inline-flex;
-  /* Para alinear icono y texto */
-  align-items: center;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    display: inline-flex;
+    /* Para alinear icono y texto */
+    align-items: center;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
   }
 
   .modal-links a:hover {
-  color: var(--secondary-color);
-  background-color: rgba(102, 126, 234, 0.1);
+    color: var(--secondary-color);
+    background-color: rgba(102, 126, 234, 0.1);
   }
 
   .modal-links a i.fa-youtube {
-  /* Estilo específico para icono de YouTube */
-  color: #FF0000;
-  /* Color rojo de YouTube */
-  margin-right: 10px;
-  /* Más espacio */
-  font-size: 1.2em;
-  /* Icono un poco más grande */
+    /* Estilo específico para icono de YouTube */
+    color: #FF0000;
+    /* Color rojo de YouTube */
+    margin-right: 10px;
+    /* Más espacio */
+    font-size: 1.2em;
+    /* Icono un poco más grande */
   }
 
   .modal-button-close {
-  /* Botón de cierre para modales */
-  background: linear-gradient(135deg, #555 0%, #333 100%);
+    /* Botón de cierre para modales */
+    background: linear-gradient(135deg, #555 0%, #333 100%);
   }
 
   /* Adaptaciones para pantallas pequeñas */
   @media (max-width: 768px) {
-  body {
-  padding: 1rem;
+    body {
+      padding: 1rem;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+    }
+
+    form {
+      padding: 2rem 1.5rem;
+    }
+
+    .super-meta-card {
+      padding: 2rem 1.5rem;
+    }
+
+    .super-meta-card:hover {
+      transform: perspective(1000px) rotateY(0deg) scale(1.02);
+    }
+
+    .modal-content {
+      padding: 2rem 1.5rem;
+      width: 95%;
+    }
+
+    .modal-content h4 {
+      font-size: 1.5rem;
+    }
+
+    .modal-content p {
+      font-size: 0.95rem;
+    }
   }
 
-  h2 {
-  font-size: 1.8rem;
+  /* Nuevo estilo para organizar los botones en el formulario */
+  .form-actions {
+    display: flex;
+    gap: 15px;
+    /* Espacio entre los botones */
+    margin-top: 1.5rem;
+    /* Margen superior para separarlo de los inputs */
+    flex-wrap: wrap;
+    /* Permite que los botones se envuelvan en pantallas pequeñas */
   }
 
-  form {
-  padding: 2rem 1.5rem;
+  .form-actions button,
+  .form-actions .button-style {
+    width: auto;
+    /* Ancho automático para que no ocupen el 100% */
+    flex-grow: 1;
+    /* Permite que crezcan para ocupar el espacio disponible */
+    margin-top: 0;
+    /* Eliminar el margen superior individual si ya lo tiene el contenedor */
   }
 
-  .super-meta-card {
-  padding: 2rem 1.5rem;
-  }
+  /* Ajuste para que los botones se mantengan en una sola columna en móviles si es necesario */
+  @media (max-width: 500px) {
+    /* Ajusta el valor según tus necesidades */
+    .form-actions {
+      flex-direction: column;
+    }
 
-  .super-meta-card:hover {
-  transform: perspective(1000px) rotateY(0deg) scale(1.02);
+    .form-actions button,
+    .form-actions .button-style {
+      width: 100%;
+      /* Vuelve a ocupar el 100% en columnas */
+    }
   }
+</style>
+<h2>📊 Formulario de Finanzas Personales</h2>
+{% if error %}
+<div class="error-message">{{ error }}</div>
+{% endif %}
 
-  .modal-content {
-  padding: 2rem 1.5rem;
-  width: 95%;
-  }
-
-  .modal-content h4 {
-  font-size: 1.5rem;
-  }
-
-  .modal-content p {
-  font-size: 0.95rem;
-  }
-  }
- </style>
- <h2>📊 Formulario de Finanzas Personales</h2>
- {% if error %}
- <div class="error-message">{{ error }}</div>
- {% endif %}
-
- <form method="POST" action="{% url 'formulario' %}" id="financeForm">
+<form method="POST" action="{% url 'formulario' %}" id="financeForm">
   {% csrf_token %}
 
   <div class="input-group">
-  <i class="fas fa-user fa-input-icon"></i>
-  <label>Nombre Completo:</label>
-  <p class="user-display-name">
-  {% if nombre %}
-  {{ nombre }}
-  {% else %}
-  Usuario no identificado
-  {% endif %}
-  </p>
-  <input type="hidden" name="nombre" value="{{ nombre|default:'' }}">
+    <i class="fas fa-user fa-input-icon"></i>
+    <label>Nombre Completo:</label>
+    <p class="user-display-name">
+      {% if nombre %}
+      {{ nombre }}
+      {% else %}
+      Usuario no identificado
+      {% endif %}
+    </p>
+    <input type="hidden" name="nombre" value="{{ nombre|default:'' }}">
   </div>
 
   <div class="input-group">
-  <i class="fas fa-coins fa-input-icon"></i>
-  <label for="ingresos">💰 Ingresos Mensuales:</label>
-  <input type="number" id="ingresos" name="ingresos_mensuales" step="0.01" placeholder="Ej: 1500.00"
-  required>
+    <i class="fas fa-coins fa-input-icon"></i>
+    <label for="ingresos">💰 Ingresos Mensuales:</label>
+    <input type="number" id="ingresos" name="ingresos_mensuales" step="0.01" placeholder="Ej: 1500.00" required>
   </div>
 
   <div class="input-group">
-  <i class="fas fa-utensils fa-input-icon"></i>
-  <label for="gasto_alimentacion">🍎 Gasto en Alimentación:</label>
-  <input type="number" id="gasto_alimentacion" name="gasto_alimentacion" step="0.01"
-  placeholder="Ej: 300.00">
+    <i class="fas fa-utensils fa-input-icon"></i>
+    <label for="gasto_alimentacion">🍎 Gasto en Alimentación:</label>
+    <input type="number" id="gasto_alimentacion" name="gasto_alimentacion" step="0.01" placeholder="Ej: 300.00">
   </div>
 
   <div class="input-group">
-  <i class="fas fa-car-side fa-input-icon"></i>
-  <label for="gasto_transporte">🚗 Gasto en Transporte:</label>
-  <input type="number" id="gasto_transporte" name="gasto_transporte" step="0.01" placeholder="Ej: 100.00">
+    <i class="fas fa-car-side fa-input-icon"></i>
+    <label for="gasto_transporte">🚗 Gasto en Transporte:</label>
+    <input type="number" id="gasto_transporte" name="gasto_transporte" step="0.01" placeholder="Ej: 100.00">
   </div>
 
   <div class="input-group">
-  <i class="fas fa-film fa-input-icon"></i>
-  <label for="gasto_entretenimiento">🎬 Gasto en Entretenimiento:</label>
-  <input type="number" id="gasto_entretenimiento" name="gasto_entretenimiento" step="0.01"
-  placeholder="Ej: 150.00">
+    <i class="fas fa-film fa-input-icon"></i>
+    <label for="gasto_entretenimiento">🎬 Gasto en Entretenimiento:</label>
+    <input type="number" id="gasto_entretenimiento" name="gasto_entretenimiento" step="0.01" placeholder="Ej: 150.00">
   </div>
 
   <div class="input-group">
-  <i class="fas fa-home fa-input-icon"></i>
-  <label for="gasto_hogar">🏠 Gasto en Hogar:</label>
-  <input type="number" id="gasto_hogar" name="gasto_hogar" step="0.01" placeholder="Ej: 250.00">
+    <i class="fas fa-home fa-input-icon"></i>
+    <label for="gasto_hogar">🏠 Gasto en Hogar:</label>
+    <input type="number" id="gasto_hogar" name="gasto_hogar" step="0.01" placeholder="Ej: 250.00">
   </div>
 
   <div class="input-group">
-  <i class="fas fa-piggy-bank fa-input-icon"></i>
-  <label for="meta_ahorro">🎯 Meta de Ahorro Mensual:</label>
-  <input type="number" id="meta_ahorro" name="meta_ahorro" step="0.01" placeholder="Ej: 200.00">
+    <i class="fas fa-piggy-bank fa-input-icon"></i>
+    <label for="meta_ahorro">🎯 Meta de Ahorro Mensual:</label>
+    <input type="number" id="meta_ahorro" name="meta_ahorro" step="0.01" placeholder="Ej: 200.00">
   </div>
 
-  <button type="submit" id="submitFormButton">Enviar y Obtener Recomendación ✨</button>
- </form>
+  <div class="form-actions">
+    <button type="submit" id="submitFormButton">Enviar y Obtener Recomendación ✨</button>
+    <a href="{% url 'dashboard' %}" class="button-style">Volver al Dashboard</a>
+  </div>
+</form>
 
- <div class="super-meta-card">
+<div class="super-meta-card">
   <h3><i class="fas fa-star"></i> Super Meta de Ahorro</h3>
   <p>Planifica a lo grande. ¿Cuánto te gustaría haber ahorrado en los próximos <strong>2 años</strong>?</p>
   <div class="input-group">
-  <i class="fas fa-calendar-alt fa-input-icon"></i>
-  <label for="meta_ahorro_2_anos">🏁 Ingresa tu meta para 2 años:</label>
-  <input type="number" id="meta_ahorro_2_anos" name="meta_ahorro_2_anos" step="0.01"
-  placeholder="Ej: 5000.00">
+    <i class="fas fa-calendar-alt fa-input-icon"></i>
+    <label for="meta_ahorro_2_anos">🏁 Ingresa tu meta para 2 años:</label>
+    <input type="number" id="meta_ahorro_2_anos" name="meta_ahorro_2_anos" step="0.01" placeholder="Ej: 5000.00">
   </div>
   <button type="button" class="button-style button-consultar" id="consultarSuperMetaButton">
-  <i class="fas fa-search-dollar"></i> Consultar Canales
+    <i class="fas fa-search-dollar"></i> Consultar Canales
   </button>
- </div>
+</div>
 
- <div class="modal-overlay" id="mainChannelsModal">
+<div class="modal-overlay" id="mainChannelsModal">
   <div class="modal-content">
-  <h4><i class="fas fa-lightbulb"></i> ¡Canales que te Impulsarán!</h4>
-  <p>Estos recursos de YouTube pueden ofrecerte excelentes consejos y estrategias para alcanzar tus
-  metas financieras generales:</p>
-  <ul class="modal-links">
-  <li><a href="https://www.youtube.com/@VisualPolitik" target="_blank"><i class="fab fa-youtube"></i>
-  VisualPolitik</a></li>
-  <li><a href="https://www.youtube.com/@elinversorinteligenteofi" target="_blank"><i class="fab fa-youtube"></i> El Inversor
-  Inteligente</a></li>
-  <li><a href="https://www.youtube.com/@BalioApp" target="_blank"><i class="fab fa-youtube"></i> Balio</a></li>
-  <li><a href="https://www.youtube.com/@PlanetaFinanciero" target="_blank"><i class="fab fa-youtube"></i> Planeta
-  Financiero</a></li>
-  <li><a href="https://www.youtube.com/@ValueSchool" target="_blank"><i class="fab fa-youtube"></i> Value
-  School</a></li>
-  </ul>
-  <button type="button" class="button-style modal-button-close" id="closeMainModalButton">Continuar con mi
-  Mentor Financiero</button>
+    <h4><i class="fas fa-lightbulb"></i> ¡Canales que te Impulsarán!</h4>
+    <p>Estos recursos de YouTube pueden ofrecerte excelentes consejos y estrategias para alcanzar tus
+      metas financieras generales:</p>
+    <ul class="modal-links">
+      <li><a href="https://www.youtube.com/@VisualPolitik" target="_blank"><i class="fab fa-youtube"></i>
+          VisualPolitik</a></li>
+      <li><a href="https://www.youtube.com/@elinversorinteligenteofi" target="_blank"><i class="fab fa-youtube"></i> El Inversor
+          Inteligente</a></li>
+      <li><a href="https://www.youtube.com/@BalioApp" target="_blank"><i class="fab fa-youtube"></i> Balio</a></li>
+      <li><a href="https://www.youtube.com/@PlanetaFinanciero" target="_blank"><i class="fab fa-youtube"></i> Planeta
+          Financiero</a></li>
+      <li><a href="https://www.youtube.com/@ValueSchool" target="_blank"><i class="fab fa-youtube"></i> Value
+          School</a></li>
+    </ul>
+    <button type="button" class="button-style modal-button-close" id="closeMainModalButton">Continuar con mi
+      Mentor Financiero</button>
   </div>
- </div>
+</div>
 
- <div class="modal-overlay" id="superMetaModal">
+<div class="modal-overlay" id="superMetaModal">
   <div class="modal-content">
-  <h4><i class="fas fa-rocket"></i> ¡A Cumplir esa Super Meta!</h4>
-  <p>¡Claro! Estos canales te van a ayudar a enfocarte y alcanzar esa ambiciosa meta de ahorro a 2
-  años:</p>
-  <ul class="modal-links">
-  <li><a href="https://youtu.be/WF6qLnuh4EA" target="_blank"><i class="fab fa-youtube"></i> Canal Finanzas X
-  (Ejemplo)</a></li>
-  <li><a href="https://youtu.be/ynDTMGQIWMU" target="_blank"><i class="fab fa-youtube"></i> Ahorro Extremo con
-  Y (Ejemplo)</a></li>
-  <li><a href="https://youtu.be/40nEm-3zaAs" target="_blank"><i class="fab fa-youtube"></i> Invierte para tu
-  Futuro Z (Ejemplo)</a></li>
-  <li><a href="https://youtu.be/VCEE58Oy7ig" target="_blank"><i class="fab fa-youtube"></i> Estrategias de
-  Riqueza W (Ejemplo)</a></li>
-  </ul>
-  <button type="button" class="button-style modal-button-close" id="closeSuperMetaModalButton">¡Entendido!</button>
+    <h4><i class="fas fa-rocket"></i> ¡A Cumplir esa Super Meta!</h4>
+    <p>¡Claro! Estos canales te van a ayudar a enfocarte y alcanzar esa ambiciosa meta de ahorro a 2
+      años:</p>
+    <ul class="modal-links">
+      <li><a href="https://youtu.be/WF6qLnuh4EA" target="_blank"><i class="fab fa-youtube"></i> Canal Finanzas X
+          (Ejemplo)</a></li>
+      <li><a href="https://youtu.be/ynDTMGQIWMU" target="_blank"><i class="fab fa-youtube"></i> Ahorro Extremo con
+          Y (Ejemplo)</a></li>
+      <li><a href="https://youtu.be/40nEm-3zaAs" target="_blank"><i class="fab fa-youtube"></i> Invierte para tu
+          Futuro Z (Ejemplo)</a></li>
+      <li><a href="https://youtu.be/VCEE58Oy7ig" target="_blank"><i class="fab fa-youtube"></i> Estrategias de
+          Riqueza W (Ejemplo)</a></li>
+    </ul>
+    <button type="button" class="button-style modal-button-close" id="closeSuperMetaModalButton">¡Entendido!</button>
   </div>
- </div>
+</div>
 
- <script>
+<script>
   document.addEventListener('DOMContentLoaded', function () {
-  const financeForm = document.getElementById('financeForm');
-  const mainChannelsModal = document.getElementById('mainChannelsModal');
-  const closeMainModalButton = document.getElementById('closeMainModalButton');
+    const financeForm = document.getElementById('financeForm');
+    const mainChannelsModal = document.getElementById('mainChannelsModal');
+    const closeMainModalButton = document.getElementById('closeMainModalButton');
 
-  const superMetaInput = document.getElementById('meta_ahorro_2_anos');
-  const consultarSuperMetaButton = document.getElementById('consultarSuperMetaButton');
-  const superMetaModal = document.getElementById('superMetaModal');
-  const closeSuperMetaModalButton = document.getElementById('closeSuperMetaModalButton');
+    const superMetaInput = document.getElementById('meta_ahorro_2_anos');
+    const consultarSuperMetaButton = document.getElementById('consultarSuperMetaButton');
+    const superMetaModal = document.getElementById('superMetaModal');
+    const closeSuperMetaModalButton = document.getElementById('closeSuperMetaModalButton');
 
-  // Función genérica para abrir un modal
-  function openModal(modalElement) {
-  if (modalElement) {
-  modalElement.classList.add('active');
-  }
-  }
+    // Función genérica para abrir un modal
+    function openModal(modalElement) {
+      if (modalElement) {
+        modalElement.classList.add('active');
+      }
+    }
 
-  // Función genérica para cerrar un modal
-  function closeModal(modalElement) {
-  if (modalElement) {
-  modalElement.classList.remove('active');
-  }
-  }
+    // Función genérica para cerrar un modal
+    function closeModal(modalElement) {
+      if (modalElement) {
+        modalElement.classList.remove('active');
+      }
+    }
 
-  // Modal principal (envío de formulario)
-  if (financeForm) {
-  financeForm.addEventListener('submit', function (event) {
-  event.preventDefault();
-  openModal(mainChannelsModal);
+    // Modal principal (envío de formulario)
+    if (financeForm) {
+      financeForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        openModal(mainChannelsModal);
+      });
+    }
+
+    if (closeMainModalButton) {
+      closeMainModalButton.addEventListener('click', function () {
+        closeModal(mainChannelsModal);
+        if (financeForm) {
+          financeForm.submit(); // Envía el formulario programáticamente
+        }
+      });
+    }
+
+    // Modal de Super Meta
+    if (consultarSuperMetaButton) {
+      consultarSuperMetaButton.addEventListener('click', function () {
+        const metaValue = superMetaInput.value;
+        if (metaValue && parseFloat(metaValue) > 0) {
+          openModal(superMetaModal);
+        } else {
+          superMetaInput.focus();
+          alert("Por favor, ingresa un valor para tu super meta antes de consultar.");
+        }
+      });
+    }
+
+    if (closeSuperMetaModalButton) {
+      closeSuperMetaModalButton.addEventListener('click', function () {
+        closeModal(superMetaModal);
+      });
+    }
+
+    // Cerrar modales al hacer clic fuera de ellos
+    [mainChannelsModal, superMetaModal].forEach(modal => {
+      if (modal) {
+        modal.addEventListener('click', function (event) {
+          if (event.target === modal) {
+            closeModal(modal);
+          }
+        });
+      }
+    });
   });
-  }
-
-  if (closeMainModalButton) {
-  closeMainModalButton.addEventListener('click', function () {
-  closeModal(mainChannelsModal);
-  if (financeForm) {
-  financeForm.submit(); // Envía el formulario programáticamente
-  }
-  });
-  }
-
-  // Modal de Super Meta
-  if (consultarSuperMetaButton) {
-  consultarSuperMetaButton.addEventListener('click', function () {
-  const metaValue = superMetaInput.value;
-  if (metaValue && parseFloat(metaValue) > 0) {
-  openModal(superMetaModal);
-  } else {
-  superMetaInput.focus();
-  alert("Por favor, ingresa un valor para tu super meta antes de consultar.");
-  }
-  });
-  }
-
-  if (closeSuperMetaModalButton) {
-  closeSuperMetaModalButton.addEventListener('click', function () {
-  closeModal(superMetaModal);
-  });
-  }
-
-  // Cerrar modales al hacer clic fuera de ellos
-  [mainChannelsModal, superMetaModal].forEach(modal => {
-  if (modal) {
-  modal.addEventListener('click', function (event) {
-  if (event.target === modal) {
-  closeModal(modal);
-  }
-  });
-  }
-  });
-  });
- </script>
+</script>
