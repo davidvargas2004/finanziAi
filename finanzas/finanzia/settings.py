@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import timedelta # Asegúrate que esta línea esté presente
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -8,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d1y7=5zm2pmwg!$wrlcsd+qwh$yk!4h6$#qavof#n1re+bnr#o'
+SECRET_KEY = 'django-insecure-d1y7=5zm2pmwg!$wrlcsd+qwh$yk!4h6$#qavof#n1re+bnr#o' # Manten tu SECRET_KEY original
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -26,9 +27,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts',
-    'rest_framework',
-    'rest_framework_simplejwt',
+    'accounts', # Tu app
+    'rest_framework', # Django REST framework
+    'rest_framework_simplejwt', # Simple JWT
 ]
 
 LOGIN_URL = '/accounts/login/'
@@ -43,7 +44,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'accounts.middleware.AuthRequiredMiddleware',
+    'accounts.middleware.AuthRequiredMiddleware', # Asumo que este es un middleware tuyo personalizado
 ]
 
 ROOT_URLCONF = 'finanzia.urls'
@@ -99,9 +100,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-us' # Puedes cambiarlo a 'es' si tu app es en español
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'UTC' # Puedes cambiarlo a tu zona horaria, ej: 'America/Bogota'
 
 USE_I18N = True
 
@@ -119,9 +120,47 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # AÑADIDO: Para permitir solicitudes POST desde estos orígenes cuando se usa HTTPS
-# El error indica que tu solicitud POST viene de https://localhost:8000
 CSRF_TRUSTED_ORIGINS = [
     'https://localhost:8000',
-    'https://127.0.0.1:8000', # Es buena idea añadir la IP también
+    'https://127.0.0.1:8000',
 ]
 
+# Configuración para Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+    # Si quieres que TODAS las vistas de API requieran autenticación por defecto,
+    # puedes añadir también (esto es opcional por ahora y puedes decidirlo después):
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticated',
+    # )
+}
+
+# Configuración para Simple JWT
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),  # Tiempo de vida del token de acceso (ej: 30 minutos)
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),    # Tiempo de vida del token de refresco (ej: 1 día)
+    "ROTATE_REFRESH_TOKENS": False, # False es más simple para empezar
+    "BLACKLIST_AFTER_ROTATION": False, # False es más simple para empezar
+
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY, # Usa la SECRET_KEY de Django. ¡Muy importante que sea segura en producción!
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+
+    "AUTH_HEADER_TYPES": ("Bearer",), # "Bearer" es el prefijo estándar para enviar el token
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION", # Nombre del encabezado HTTP
+    "USER_ID_FIELD": "id", # Campo del modelo de usuario que se usará como identificador
+    "USER_ID_CLAIM": "user_id", # Nombre del claim en el JWT para el ID de usuario
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type", # Claim para el tipo de token
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser", # Clase para el usuario del token
+
+    "JTI_CLAIM": "jti", # Claim para el ID único del JWT
+}
