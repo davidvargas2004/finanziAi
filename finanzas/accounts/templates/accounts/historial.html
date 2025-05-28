@@ -1,143 +1,219 @@
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Historial de Consultas</title>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Consultas</title>
 
-        <!-- CSS integrado -->
-        <style>
-            /* Estilos generales */
-            body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #f4f4f9;
-            }
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-            .container {
-                width: 80%;
-                margin: 20px auto;
-                background-color: #ffffff;
-                padding: 20px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                border-radius: 8px;
-            }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-            h1, h2 {
-                color: #333;
-                text-align: center;
-            }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
 
-            /* Formulario */
-            form {
-                margin-bottom: 20px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
+        form {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-            input[type="text"], button {
-                padding: 10px;
-                font-size: 16px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-            }
+        input[type="text"], button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
 
-            button {
-                background-color:rgb(76, 160, 175);
-                color: white;
-                cursor: pointer;
-            }
+        button {
+            background-color: rgb(76, 160, 175);
+            color: white;
+            cursor: pointer;
+        }
 
-            button:hover {
-                background-color:rgb(69, 149, 160);
-            }
+        button:hover {
+            background-color: rgb(69, 149, 160);
+        }
 
-            /* Estilo de las consultas */
-            ul {
-                list-style: none;
-                padding: 0;
-            }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
 
-            li {
-                padding: 10px;
-                margin-bottom: 10px;
-                background-color: #f9f9f9;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-            }
+        li {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-            li strong {
-                color: #333;
-            }
+        li strong {
+            color: #333;
+        }
 
-            a {
-                color: #d9534f;
-                text-decoration: none;
-                font-weight: bold;
-            }
+        a {
+            color: #d9534f;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-            a:hover {
-                text-decoration: underline;
-            }
+        a:hover {
+            text-decoration: underline;
+        }
 
-            /* Mensaje cuando no hay consultas */
-            p {
-                text-align: center;
-                font-size: 18px;
-                color: #777;
-            }
-        </style>
-    </head>
-    <body>
+        p {
+            text-align: center;
+            font-size: 18px;
+            color: #777;
+        }
 
-        <div class="container">
-            <h1>Historial de Consultas</h1>
+        /* Botón modo oscuro */
+        .dark-toggle {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            padding: 8px 12px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 1000;
+        }
 
-            <!-- Formulario para agregar nuevas consultas -->
-            <form method="POST" action="{% url 'historial_consultas' %}">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Enviar consulta</button>
-            </form>
+        /* Estilos modo oscuro */
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
 
-            <!-- Barra de búsqueda -->
-            <form method="GET" action="{% url 'historial_consultas' %}">
-                <input type="text" name="q" value="{{ query }}" placeholder="Buscar consultas">
-                <button type="submit">Buscar</button>
-            </form>
+        body.dark-mode .container {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
+        }
 
-            <!-- Mostrar todas las consultas -->
-            <h2>Consultas</h2>
-            {% if consultas %}
-                <ul>
-                    {% for consulta in consultas %}
-                        <li>
-                            <strong>Consulta:</strong> {{ consulta.consulta }} <br>
-                            <strong>Resultado:</strong> {{ consulta.resultado }} <br>
-                            <strong>Fecha:</strong> {{ consulta.fecha }} <br>
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode li strong {
+            color: #ffffff;
+        }
+
+        body.dark-mode input[type="text"] {
+            background-color: #2c2c2c;
+            color: white;
+            border: 1px solid #555;
+        }
+
+        body.dark-mode li {
+            background-color: #2a2a2a;
+            border-color: #444;
+        }
+
+        body.dark-mode button {
+            background-color: #027b8e;
+        }
+
+        body.dark-mode button:hover {
+            background-color: #016676;
+        }
+
+        body.dark-mode a {
+            color: #f06292;
+        }
+
+        body.dark-mode p {
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Botón de modo oscuro -->
+    <button id="toggleBtn" class="dark-toggle">🌙</button>
+
+    <div class="container">
+        <h1>Historial de Consultas</h1>
+
+        <!-- Formulario para agregar nuevas consultas -->
+        <form method="POST" action="{% url 'historial_consultas' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Enviar consulta</button>
+        </form>
+
+        <!-- Barra de búsqueda -->
+        <form method="GET" action="{% url 'historial_consultas' %}">
+            <input type="text" name="q" value="{{ query }}" placeholder="Buscar consultas">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <!-- Mostrar todas las consultas -->
+        <h2>Consultas</h2>
+        {% if consultas %}
+            <ul>
+                {% for consulta in consultas %}
+                    <li>
+                        <strong>Consulta:</strong> {{ consulta.consulta }} <br>
+                        <strong>Resultado:</strong> {{ consulta.resultado }} <br>
+                        <strong>Fecha:</strong> {{ consulta.fecha }} <br>
                         <form method="POST" action="{% url 'eliminar_consulta' consulta.id %}" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta consulta?');" style="background-color: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
-            Eliminar
-        </button>
-    </form>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No hay consultas registradas.</p>
-            {% endif %}
-        </div>
+                            {% csrf_token %}
+                            <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta consulta?');" style="background-color: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
+                                Eliminar
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay consultas registradas.</p>
+        {% endif %}
+    </div>
 
-    </body>
-    </html>
+    <!-- Botón para volver -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a href="{% url 'dashboard' %}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            Volver al Dashboard
+        </a>
+    </div>
 
-<!-- Botón centrado para ir al Dashboard -->
-<div style="text-align: center; margin-bottom: 20px;">
-    <a href="{% url 'dashboard' %}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-        Volver al Dashboard
-    </a>
-</div>
+    <script>
+    const toggleBtn = document.getElementById('toggleBtn');
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dark = localStorage.getItem('theme') === 'dark';
+        document.body.classList.toggle('dark-mode', dark);
+        toggleBtn.textContent = dark ? '☀️' : '🌙';
+    });
+
+    toggleBtn.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        toggleBtn.textContent = isDark ? '☀️' : '🌙';
+    });
+</script>
+    
+</body>
+</html>
+
 
