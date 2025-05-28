@@ -350,3 +350,89 @@ header {
   .detalle-gastos strong {
     color: #333;
   }
+
+  /* 🌙 Modo oscuro */
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-mode .sidebar {
+    background-color: #0f2415;
+    color: #e0e0e0;
+}
+
+body.dark-mode .nav-links li.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left-color: #81c784; /* tono verde claro */
+}
+
+body.dark-mode .nav-links li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .nav-links a {
+    color: #ffffff;
+}
+
+body.dark-mode .card {
+    background-color: #1e1e1e;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode header {
+    border-bottom-color: #333;
+}
+
+body.dark-mode .search-container input {
+    background-color: #222;
+    color: #fff;
+    border-color: #444;
+}
+
+body.dark-mode .search-container button {
+    background-color: #388e3c;
+    border-color: #388e3c;
+}
+
+body.dark-mode .value {
+    color: #fff;
+}
+
+body.dark-mode .change {
+    color: #ccc;
+}
+
+body.dark-mode .leyenda-item {
+    color: #ddd;
+}
+
+body.dark-mode .detalle-gastos {
+    background: #1e1e1e;
+    color: #e0e0e0;
+}
+
+body.dark-mode .detalle-gastos strong {
+    color: #fff;
+}
+
+body.dark-mode #toggle-dark-mode {
+    color: #fff;
+    border-color: #444;
+}
+
+body.dark-mode #toggle-dark-mode:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+
+#toggle-dark-mode {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-left: 15px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}

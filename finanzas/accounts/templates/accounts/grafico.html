@@ -19,9 +19,8 @@
                 <li><a href="{% url 'dashboard' %}"><span class="icon">📊</span> Dashboard</a></li>
                 <li><a href="{% url 'formulario' %}"><span class="icon">📋</span>Formulario</a></li>
                 <li class="active"><a href="#"><span class="icon">🪙</span>Gráfico</a></li>
-                <li><a href="#"><span class="icon">💰</span> Cuentas</a></li>
-                <li><a href="#"><span class="icon">💹</span> Transacciones</a></li>
-                <li><a href="#"><span class="icon">⚙️</span> Configuración</a></li>
+                <li><a href="{% url 'historial_consultas' %}"><span class="icon">📜</span> Historial</a></li> 
+                <li><a href="{% url 'reporte_pdf' %}"><span class="icon">📄</span> Reporte</a></li>
                 <li><a href="{% url 'logout' %}"><span class="icon">🚪</span> Logout</a></li>
             </ul>
         </nav>
@@ -41,6 +40,7 @@
                         <span class="user-avatar">👤</span>
                     </div>
                 </div>
+                <button id="toggle-dark-mode">🌙</button>
                 <!-- Notification Box -->
                 <div id="notif-box" class="card" style="display:none; position:absolute; right:40px; top:70px; width:300px; max-height:400px; overflow-y:auto; z-index:100;">
                     <h4 style="margin:10px;">Notificaciones</h4>
@@ -168,5 +168,23 @@ document.addEventListener("DOMContentLoaded", function () {
         cargarComparativaMensual();
     });
     </script>
+
+    <script>
+    const toggleBtn = document.getElementById('toggle-dark-mode');
+
+// Inicializar desde localStorage
+document.addEventListener('DOMContentLoaded', () => {
+    const dark = localStorage.getItem('theme') === 'dark';
+    document.body.classList.toggle('dark-mode', dark);
+    toggleBtn.textContent = dark ? '☀️' : '🌙';
+});
+
+toggleBtn.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    toggleBtn.textContent = isDark ? '☀️' : '🌙';
+});
+
+</script>
 </body>
 </html>
