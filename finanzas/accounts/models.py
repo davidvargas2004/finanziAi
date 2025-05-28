@@ -31,6 +31,7 @@ class FormularioFinanzas(models.Model):
     gasto_alimentacion = models.FloatField()
     gasto_transporte = models.FloatField()
     gasto_entretenimiento = models.FloatField()
+    gasto_hogar = models.FloatField(default=0)  # <-- agregado
     meta_ahorro = models.FloatField()
     ahorro_mensual = models.FloatField()
     recomendaciones = models.TextField()
@@ -38,6 +39,7 @@ class FormularioFinanzas(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - {self.timestamp}"
+
     
 
   

@@ -32,7 +32,7 @@ def formulario_view(request):
     # Prepara el contexto inicial con el nombre del usuario
     context = {
         'nombre': nombre,
-        'error': None, # Por defecto no hay error
+        'error': None,  # Por defecto no hay error
     }
     # --- Fin de la lógica para obtener el nombre ---
 
@@ -76,9 +76,9 @@ def formulario_view(request):
             # Datos para guardar en MongoDB Atlas y pasar a la API de Cohere
             contexto_para_procesamiento = {
                 "usuario_id": usuario_id,
-                "nombre": nombre, # El nombre ya está disponible aquí
+                "nombre": nombre,
                 "ingresos_mensuales": ingresos,
-                "gastos_mensuales": gastos, # Pasamos el diccionario completo de gastos por categoría
+                "gastos_mensuales": gastos,
                 "metas_financieras": {"ahorro": meta_ahorro},
                 "ahorro_mensual": ahorro_mensual,
                 "timestamp": datetime.now().isoformat()
@@ -88,11 +88,27 @@ def formulario_view(request):
             recomendacion = generate_cohere_recommendation(contexto_para_procesamiento)
             lineas_recomendaciones = recomendacion.strip().splitlines()
 
-            # AÑADIR LA RECOMENDACIÓN AL DICCIONARIO ANTES DE GUARDAR EN MONGODB ATLAS
+            # Añadir la recomendación al contexto para Mongo
             contexto_para_procesamiento["recomendacion_ia"] = recomendacion 
 
             # Guardar los datos completos (incluyendo la recomendación) en MongoDB Atlas
             guardar_en_mongo(contexto_para_procesamiento)
+
+            # **Guardar o actualizar en SQLite usando el modelo FormularioFinanzas**
+            FormularioFinanzas.objects.update_or_create(
+                usuario_id=usuario_id,
+                defaults={
+                    "nombre": nombre,
+                    "ingresos_mensuales": ingresos,
+                    "gasto_alimentacion": gastos["Alimentacion"],
+                    "gasto_transporte": gastos["Transporte"],
+                    "gasto_entretenimiento": gastos["Entretenimiento"],
+                    "gasto_hogar": gastos["Hogar"],
+                    "meta_ahorro": meta_ahorro,
+                    "ahorro_mensual": ahorro_mensual,
+                    "recomendaciones": recomendacion,
+                }
+            )
 
             # Renderizar la plantilla de resultados con todos los datos necesarios
             return render(request, "accounts/resultado.html", {
@@ -100,27 +116,22 @@ def formulario_view(request):
                 "total_gastos": total_gastos,
                 "ahorro_mensual": ahorro_mensual,
                 "meta_ahorro": meta_ahorro,
-                "distribucion_gastos": distribucion_gastos_para_tabla, # Para la tabla de porcentajes
+                "distribucion_gastos": distribucion_gastos_para_tabla,
                 "lineas_recomendaciones": lineas_recomendaciones
             })
 
         except ValueError:
             messages.error(request, 'Por favor, ingresa solo números válidos para los ingresos, gastos y metas.')
-            # Si hay un error de validación, se debe re-renderizar el formulario
-            # y pasar los datos POST para que los campos se pre-rellenen.
-            # Asegúrate de pasar 'nombre' también en este caso.
             context['post_data'] = request.POST
             context['error'] = 'Por favor, ingresa solo números válidos para los ingresos, gastos y metas.'
             return render(request, "accounts/formulario.html", context) 
         except Exception as e:
             print(f"ERROR GENERAL al procesar el formulario en formulario_view: {e}")
             messages.error(request, f'Ocurrió un error inesperado al procesar el formulario. Por favor, inténtalo de nuevo. Detalles: {e}')
-            # Si hay un error general, re-renderizar el formulario y pasar 'nombre'.
             context['error'] = f'Ocurrió un error inesperado al procesar el formulario. Por favor, inténtalo de nuevo. Detalles: {e}'
             return render(request, "accounts/formulario.html", context)
 
-    # Si el método es GET (o si llegamos aquí después de un POST con errores no manejados por las excepciones anteriores)
-    # se renderiza el formulario, y el 'nombre' ya está en el 'context' inicial.
+    # Si el método es GET
     return render(request, "accounts/formulario.html", context)
 
 
@@ -298,31 +309,52 @@ def procesar_consulta(texto):
         return random.choice(respuestas)
 
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import FormularioFinanzas
+
 @login_required
-def grafico_view(request): 
+def grafico_view(request):
     try:
         # Obtener los datos más recientes del usuario logueado
-        datos = FormularioFinanzas.objects.filter(usuario_id=request.user.id).latest('id')
+        datos = FormularioFinanzas.objects.filter(usuario_id=str(request.user.id)).latest('id')
     except FormularioFinanzas.DoesNotExist:
         datos = None
 
     if datos:
+        ingresos = datos.ingresos_mensuales
+        alimentacion = datos.gasto_alimentacion
+        transporte = datos.gasto_transporte
+        entretenimiento = datos.gasto_entretenimiento
+        hogar = datos.gasto_hogar  # ← asegúrate de tener este campo en tu modelo
+        meta_ahorro = datos.meta_ahorro
+
+        total_gastos = alimentacion + transporte + entretenimiento + hogar
+        ahorro = max(ingresos - total_gastos, 0)
+
         context = {
-            "alimentacion": datos.gasto_alimentacion,
-            "transporte": datos.gasto_transporte,
-            "entretenimiento": datos.gasto_entretenimiento,
-            # Asegúrate de incluir 'gasto_hogar' aquí si lo estás usando en tu modelo
-            # "hogar": datos.gasto_hogar,
+            "ingresos": ingresos,
+            "alimentacion": alimentacion,
+            "transporte": transporte,
+            "entretenimiento": entretenimiento,
+            "hogar": hogar,
+            "meta_ahorro": meta_ahorro,
+            "ahorro": ahorro
         }
     else:
+        # Valores por defecto si no hay datos
         context = {
+            "ingresos": 0,
             "alimentacion": 0,
             "transporte": 0,
             "entretenimiento": 0,
-            # "hogar": 0,
+            "hogar": 0,
+            "meta_ahorro": 0,
+            "ahorro": 0
         }
 
-    return render(request, "accounts/grafico.html", context) 
+    return render(request, "accounts/grafico.html", context)
+
 
 @login_required
 def eliminar_consulta(request, consulta_id):

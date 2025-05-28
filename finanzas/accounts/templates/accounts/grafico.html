@@ -56,17 +56,24 @@
 
   <!-- Leyenda personalizada -->
   <div class="leyenda-personalizada">
-    <div class="leyenda-item"><span class="leyenda-color" style="background-color: #FF6F61;"></span>Alimentación</div>
-    <div class="leyenda-item"><span class="leyenda-color" style="background-color: #4A90E2;"></span>Transporte</div>
-    <div class="leyenda-item"><span class="leyenda-color" style="background-color: #7ED321;"></span>Entretenimiento</div>
-  </div>
+  <div class="leyenda-item"><span class="leyenda-color" style="background-color: #FF6F61;"></span>Alimentación</div>
+  <div class="leyenda-item"><span class="leyenda-color" style="background-color: #4A90E2;"></span>Transporte</div>
+  <div class="leyenda-item"><span class="leyenda-color" style="background-color: #7ED321;"></span>Entretenimiento</div>
+  <div class="leyenda-item"><span class="leyenda-color" style="background-color: #F5A623;"></span>Hogar</div>
+  <div class="leyenda-item"><span class="leyenda-color" style="background-color: #9B59B6;"></span>Ahorro</div>
+</div>
+
 
   <!-- Detalles -->
   <div class="detalle-gastos">
-    <p><strong>Alimentación:</strong> ${{ alimentacion }}</p>
-    <p><strong>Transporte:</strong> ${{ transporte }}</p>
-    <p><strong>Entretenimiento:</strong> ${{ entretenimiento }}</p>
-  </div>
+  <p><strong>Ingresos Mensuales:</strong> ${{ ingresos }}</p>
+  <p><strong>Gasto en Alimentación:</strong> ${{ alimentacion }}</p>
+  <p><strong>Gasto en Transporte:</strong> ${{ transporte }}</p>
+  <p><strong>Gasto en Entretenimiento:</strong> ${{ entretenimiento }}</p>
+  <p><strong>Gasto en Hogar:</strong> ${{ hogar }}</p>
+  <p><strong>Ahorro:</strong> ${{ ahorro }}</p>
+  <p><strong>Meta de Ahorro Mensual:</strong> ${{ meta_ahorro }}</p>
+</div>
 </div>
 </div>
 
@@ -78,32 +85,39 @@
 document.addEventListener("DOMContentLoaded", function () {
   const ctx = document.getElementById('myDonutChart').getContext('2d');
 
-  const datos = {
-    labels: ['Alimentación', 'Transporte', 'Entretenimiento'],
-    datasets: [{
-      data: [
-        parseFloat("{{ alimentacion|default:0 }}"),
-        parseFloat("{{ transporte|default:0 }}"),
-        parseFloat("{{ entretenimiento|default:0 }}")
-      ],
-      backgroundColor: ['#FF6F61', '#4A90E2', '#7ED321'],
-      borderWidth: 1
-    }]
+  const ingresos = parseFloat("{{ ingresos|default:0 }}");
+  const gastos = {
+    alimentacion: parseFloat("{{ alimentacion|default:0 }}"),
+    transporte: parseFloat("{{ transporte|default:0 }}"),
+    entretenimiento: parseFloat("{{ entretenimiento|default:0 }}"),
+    hogar: parseFloat("{{ hogar|default:0 }}")
   };
+  const ahorro = parseFloat("{{ ahorro|default:0 }}");
 
-  const total = datos.datasets[0].data.reduce((a, b) => a + b, 0);
+  const data = [
+    ingresos > 0 ? (gastos.alimentacion / ingresos * 100).toFixed(2) : 0,
+    ingresos > 0 ? (gastos.transporte / ingresos * 100).toFixed(2) : 0,
+    ingresos > 0 ? (gastos.entretenimiento / ingresos * 100).toFixed(2) : 0,
+    ingresos > 0 ? (gastos.hogar / ingresos * 100).toFixed(2) : 0,
+    ingresos > 0 ? (ahorro / ingresos * 100).toFixed(2) : 0
+  ];
 
   new Chart(ctx, {
     type: 'doughnut',
-    data: datos,
+    data: {
+      labels: ['Alimentación', 'Transporte', 'Entretenimiento', 'Hogar', 'Ahorro'],
+      datasets: [{
+        data: data,
+        backgroundColor: ['#FF6F61', '#4A90E2', '#7ED321', '#F5A623', '#9B59B6'],
+        borderWidth: 1
+      }]
+    },
     options: {
       responsive: true,
       maintainAspectRatio: true,
       plugins: {
         datalabels: {
-          formatter: (value) => {
-            return total > 0 ? ((value / total * 100).toFixed(1) + '%') : '0%';
-          },
+          formatter: (value) => value + '%',
           color: '#fff',
           font: {
             weight: 'bold',
@@ -111,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         },
         legend: {
-          display: false // ← Oculta la leyenda por defecto de Chart.js
+          display: false
         }
       }
     },
