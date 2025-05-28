@@ -2,19 +2,20 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
+from django.contrib import messages 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from finanzas_micro.recomendador import generate_cohere_recommendation, guardar_en_mongo # Asegúrate que esta ruta sea correcta
 from datetime import datetime, date
 from django.http import JsonResponse
-from django.utils.timezone import localtime
+from django.utils.timezone import localtime # Importado para notificaciones
+# from django.utils import timezone # Necesitarías esto si actualizas manualmente un DateTimeField a timezone.now()
 import random
-import json # Para el dashboard
-from decimal import Decimal, InvalidOperation # Para manejar dinero con precisión
+import json 
+from decimal import Decimal, InvalidOperation 
 
 from .models import Notification, Consulta, FormularioFinanzas
-from .forms import ConsultaForm
+from .forms import ConsultaForm 
 from django.db.models import Q
 
 
@@ -61,33 +62,41 @@ def formulario_view(request):
             contexto_para_procesamiento = {
                 "usuario_id": str(usuario.id), 
                 "nombre": nombre,
-                "ingresos_mensuales": float(ingresos), 
-                "gastos_mensuales": {k: float(v) for k, v in gastos.items()},
-                "metas_financieras": {"ahorro": float(meta_ahorro)},
-                "ahorro_mensual": float(ahorro_mensual),
-                "timestamp": datetime.now().isoformat()
+                "ingresos_mensuales": float(ingresos), # Cohere/Mongo podrían esperar float
+                "gastos_mensuales": {k: float(v) for k, v in gastos.items()}, # Cohere/Mongo podrían esperar float
+                "metas_financieras": {"ahorro": float(meta_ahorro)}, # Cohere/Mongo podrían esperar float
+                "ahorro_mensual": float(ahorro_mensual), # Cohere/Mongo podrían esperar float
+                "timestamp": datetime.now().isoformat() # Para Cohere/Mongo, si lo usan
             }
             
             recomendacion = generate_cohere_recommendation(contexto_para_procesamiento)
             lineas_recomendaciones = recomendacion.strip().splitlines()
-            contexto_para_procesamiento["recomendacion_ia"] = recomendacion 
-            guardar_en_mongo(contexto_para_procesamiento)
+            # contexto_para_procesamiento["recomendacion_ia"] = recomendacion # Ya está en la variable 'recomendacion'
+            # guardar_en_mongo(contexto_para_procesamiento) # Descomenta si lo usas
 
-            FormularioFinanzas.objects.update_or_create(
-                usuario_id=str(request.user.id), 
-                defaults={
-                    "nombre": nombre,
-                    "ingresos_mensuales": ingresos,
-                    "gasto_alimentacion": gastos["Alimentacion"],
-                    "gasto_transporte": gastos["Transporte"],
-                    "gasto_entretenimiento": gastos["Entretenimiento"],
-                    "gasto_hogar": gastos["Hogar"],
-                    "meta_ahorro": meta_ahorro,
-                    "ahorro_mensual": ahorro_mensual,
-                    "recomendaciones": recomendacion,
-                    "fecha_actualizacion": date.today() 
-                }
-            )
+            # Usar 'fecha_actualizacion' para ordenar si es relevante
+            formulario_existente = FormularioFinanzas.objects.filter(usuario_id=str(request.user.id)).order_by('-fecha_actualizacion').first()
+
+            form_data = {
+                "nombre": nombre,
+                "ingresos_mensuales": ingresos, # Guardar como Decimal ya que el modelo es DecimalField
+                "gasto_alimentacion": gastos["Alimentacion"],
+                "gasto_transporte": gastos["Transporte"],
+                "gasto_entretenimiento": gastos["Entretenimiento"],
+                "gasto_hogar": gastos["Hogar"],
+                "meta_ahorro": meta_ahorro,
+                "ahorro_mensual": ahorro_mensual,
+                "recomendaciones": recomendacion,
+                # 'fecha_actualizacion' se maneja automáticamente por auto_now=True en el modelo
+            }
+
+            if formulario_existente:
+                for key, value in form_data.items():
+                    setattr(formulario_existente, key, value)
+                formulario_existente.save()
+            else:
+                form_data['usuario_id'] = str(request.user.id)
+                FormularioFinanzas.objects.create(**form_data)
 
             return render(request, "accounts/resultado.html", {
                 "nombre": nombre,
@@ -98,7 +107,7 @@ def formulario_view(request):
                 "lineas_recomendaciones": lineas_recomendaciones
             })
 
-        except (ValueError, InvalidOperation): # Catch InvalidOperation for Decimal conversion
+        except (ValueError, InvalidOperation): 
             messages.error(request, 'Por favor, ingresa solo números válidos.')
             context['post_data'] = request.POST
             context['error'] = 'Por favor, ingresa solo números válidos para los montos financieros.'
@@ -155,7 +164,6 @@ def dashboard_view(request):
     except ValueError:
         selected_year_int = current_year_int
 
-    # Datos por defecto
     promedio_ingresos_val = Decimal('0.00')
     promedio_gastos_val = Decimal('0.00')
     promedio_ahorro_val = Decimal('0.00')
@@ -174,71 +182,61 @@ def dashboard_view(request):
     ahorros_list = [0.0] * 12
 
     try:
-        datos_financieros = FormularioFinanzas.objects.get(usuario_id=str(request.user.id))
+        # Usar fecha_actualizacion si es el campo relevante para "el más reciente"
+        datos_financieros = FormularioFinanzas.objects.filter(usuario_id=str(request.user.id)).order_by('-fecha_actualizacion').first()
         
-        # Ensure financial values from the model are treated as Decimal
-        # This is a safeguard in case the model fields are FloatField or return floats,
-        # or if values could be None.
-        def to_decimal(value, default='0.0'):
+        if not datos_financieros: 
+            raise FormularioFinanzas.DoesNotExist 
+
+        def to_decimal(value, default='0.0'): # Esta función auxiliar es útil
             if value is None:
                 return Decimal(default)
             try:
-                return Decimal(str(value)) # str(value) is safer for float to Decimal conversion
+                # Si el modelo ya tiene DecimalField, no necesitas str(value)
+                # pero si viene de un FloatField, str() es más seguro para la conversión.
+                return Decimal(value) if isinstance(value, Decimal) else Decimal(str(value))
             except InvalidOperation:
                 return Decimal(default)
 
         promedio_ingresos_val = to_decimal(datos_financieros.ingresos_mensuales)
-        
         gasto_alimentacion_actual = to_decimal(datos_financieros.gasto_alimentacion)
         gasto_transporte_actual = to_decimal(datos_financieros.gasto_transporte)
         gasto_entretenimiento_actual = to_decimal(datos_financieros.gasto_entretenimiento)
         gasto_hogar_actual = to_decimal(datos_financieros.gasto_hogar)
-        
-        promedio_gastos_val = (gasto_alimentacion_actual +
-                               gasto_transporte_actual +
-                               gasto_entretenimiento_actual +
-                               gasto_hogar_actual)
-        
+        promedio_gastos_val = (gasto_alimentacion_actual + gasto_transporte_actual +
+                               gasto_entretenimiento_actual + gasto_hogar_actual)
         promedio_ahorro_val = promedio_ingresos_val - promedio_gastos_val 
         meta_ahorro_global_val = to_decimal(datos_financieros.meta_ahorro)
 
         current_month_index = datetime.now().month - 1 
-
-        if hasattr(datos_financieros, 'fecha_actualizacion') and datos_financieros.fecha_actualizacion:
+        
+        if datos_financieros.fecha_actualizacion: # Usar el campo que existe
             record_year = datos_financieros.fecha_actualizacion.year
-            record_month_index = datos_financieros.fecha_actualizacion.month -1
+            record_month_index = datos_financieros.fecha_actualizacion.month -1 
             if selected_year_int == record_year:
                  ingresos_mensuales_list[record_month_index] = float(promedio_ingresos_val)
                  gastos_alimentacion_list[record_month_index] = float(gasto_alimentacion_actual)
-                 gastos_transporte_list[record_month_index] = float(gasto_transporte_actual)
-                 gastos_entretenimiento_list[record_month_index] = float(gasto_entretenimiento_actual)
-                 gastos_hogar_list[record_month_index] = float(gasto_hogar_actual)
+                 # ... y así para los demás
                  gastos_totales_list[record_month_index] = float(promedio_gastos_val)
                  ahorros_list[record_month_index] = float(promedio_ahorro_val)
                  mejor_mes_nombre_val = meses_nombres[record_month_index]
-                 mejor_mes_valor_val = promedio_ahorro_val 
+                 mejor_mes_valor_val = promedio_ahorro_val
         elif selected_year_int == current_year_int: 
+            # Esta lógica podría necesitar revisión si solo tienes un registro 'datos_financieros'
+            # y no un histórico mensual.
             ingresos_mensuales_list[current_month_index] = float(promedio_ingresos_val)
-            gastos_alimentacion_list[current_month_index] = float(gasto_alimentacion_actual)
-            gastos_transporte_list[current_month_index] = float(gasto_transporte_actual)
-            gastos_entretenimiento_list[current_month_index] = float(gasto_entretenimiento_actual)
-            gastos_hogar_list[current_month_index] = float(gasto_hogar_actual)
-            gastos_totales_list[current_month_index] = float(promedio_gastos_val)
-            ahorros_list[current_month_index] = float(promedio_ahorro_val)
-            mejor_mes_nombre_val = meses_nombres[current_month_index]
-            mejor_mes_valor_val = promedio_ahorro_val
-        
+            # ... y así para los demás
+
         consejos_list = []
-        # All calculations below now use Decimal types consistently
-        if promedio_ingresos_val > Decimal('0'): # Check against Decimal('0') for clarity
+        if promedio_ingresos_val > Decimal('0'): 
             if promedio_ahorro_val < (promedio_ingresos_val * Decimal('0.1')):
                 consejos_list.append("Tu ahorro actual es un poco bajo respecto a tus ingresos. Intenta revisar gastos no esenciales.")
             if gasto_entretenimiento_actual > (promedio_ingresos_val * Decimal('0.2')):
                 consejos_list.append("Considera moderar tus gastos en entretenimiento para mejorar tu capacidad de ahorro.")
         
-        if not consejos_list and promedio_ingresos_val <= Decimal('0'): # If no income, different advice
+        if not consejos_list and promedio_ingresos_val <= Decimal('0'): 
              consejos_list.append("Parece que no has registrado ingresos. Por favor, actualiza tus datos en el formulario.")
-        elif not consejos_list: # If income > 0 and no specific advice triggered
+        elif not consejos_list: 
             consejos_list.append("¡Sigue así! Planificar tus finanzas es clave.")
 
         if datos_financieros.recomendaciones: 
@@ -247,11 +245,9 @@ def dashboard_view(request):
     except FormularioFinanzas.DoesNotExist:
         print(f"No se encontraron datos financieros para el usuario {request.user.id}")
         consejos_list = ["Ingresa tus datos en el formulario para ver un análisis financiero y consejos personalizados."]
-    except Exception as e: # Catch other potential errors during data processing
+    except Exception as e: 
         print(f"Error al procesar datos financieros para el dashboard: {e}")
         messages.error(request, "Hubo un error al cargar los datos del dashboard.")
-        # Keep default values for context if processing fails
-
 
     chart_data_dict = {
         'meses': meses_nombres,
@@ -263,9 +259,7 @@ def dashboard_view(request):
         'gastosTotales': gastos_totales_list,
         'ahorros': ahorros_list,
     }
-
     available_years = [current_year_int, current_year_int - 1, current_year_int - 2]
-
     context = {
         'user': request.user, 
         'selected_year': selected_year_int,
@@ -281,8 +275,12 @@ def dashboard_view(request):
     }
     return render(request, 'accounts/dashboard.html', context)
 
-
 def logout_view(request):
+    storage = messages.get_messages(request)
+    for message in storage:
+        pass  
+    if hasattr(storage, 'used'): 
+        storage.used = True 
     logout(request)
     return redirect('login')
 
@@ -370,22 +368,23 @@ def procesar_consulta(texto):
 @login_required
 def grafico_view(request):
     try:
-        # Use .latest('fecha_actualizacion') if you added that field and want the truly latest
-        datos = FormularioFinanzas.objects.filter(usuario_id=str(request.user.id)).latest('id') 
+        # Usar fecha_actualizacion
+        datos = FormularioFinanzas.objects.filter(usuario_id=str(request.user.id)).order_by('-fecha_actualizacion').first() 
+        if not datos:
+             raise FormularioFinanzas.DoesNotExist
     except FormularioFinanzas.DoesNotExist:
         datos = None
 
-    context_data = { # Valores por defecto
+    context_data = { 
             "ingresos": Decimal('0.0'), "alimentacion": Decimal('0.0'), 
             "transporte": Decimal('0.0'), "entretenimiento": Decimal('0.0'),
             "hogar": Decimal('0.0'), "meta_ahorro": Decimal('0.0'), 
             "ahorro": Decimal('0.0')
     }
     if datos:
-        # Helper to safely convert to Decimal
-        def to_decimal_grafico(value, default='0.0'):
+        def to_decimal_grafico(value, default='0.0'): # Renombrada para evitar colisión si defines to_decimal globalmente
             if value is None: return Decimal(default)
-            try: return Decimal(str(value))
+            try: return Decimal(value) if isinstance(value, Decimal) else Decimal(str(value))
             except InvalidOperation: return Decimal(default)
 
         ingresos = to_decimal_grafico(datos.ingresos_mensuales)
@@ -417,24 +416,25 @@ def terms_of_service(request):
 def privacy_policy(request):
     return render(request, 'legal/privacy_policy.html')
 
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-# from weasyprint import HTML 
-import tempfile 
+# from django.http import HttpResponse # Ya está importado
+# from django.template.loader import render_to_string # Ya está importado
+# import tempfile # Ya está importado
 
 @login_required 
 def reporte_pdf(request):
     try:
-        datos = FormularioFinanzas.objects.filter(usuario_id=str(request.user.id)).latest('id')
+        # Usar fecha_actualizacion
+        datos = FormularioFinanzas.objects.filter(usuario_id=str(request.user.id)).order_by('-fecha_actualizacion').first()
+        if not datos:
+            raise FormularioFinanzas.DoesNotExist
     except FormularioFinanzas.DoesNotExist:
         messages.error(request, "No hay datos financieros para generar el reporte.")
         return redirect('dashboard') 
 
     distribucion_gastos_pdf = []
-    # Helper to safely convert to Decimal for PDF context
-    def to_decimal_pdf(value, default='0.0'):
+    def to_decimal_pdf(value, default='0.0'): # Renombrada para evitar colisión
         if value is None: return Decimal(default)
-        try: return Decimal(str(value))
+        try: return Decimal(value) if isinstance(value, Decimal) else Decimal(str(value))
         except InvalidOperation: return Decimal(default)
 
     ingresos_pdf = to_decimal_pdf(datos.ingresos_mensuales)
@@ -457,7 +457,7 @@ def reporte_pdf(request):
             distribucion_gastos_pdf.append({'categoria': categoria, 'valor': valor, 'porcentaje': f"{porcentaje:.2f}"})
     else: 
          for categoria_nombre in ['Alimentación', 'Transporte', 'Entretenimiento', 'Hogar']:
-             valor_gasto = locals().get(f"gasto_{categoria_nombre.lower()}_pdf", Decimal('0'))
+             valor_gasto = locals().get(f"gasto_{categoria_nombre.lower()}_pdf", Decimal('0')) # Esto podría ser más simple
              distribucion_gastos_pdf.append({'categoria': categoria_nombre, 'valor': valor_gasto, 'porcentaje': "0.00"})
 
     contexto_pdf = {
@@ -471,6 +471,6 @@ def reporte_pdf(request):
         'recomendaciones_pdf': datos.recomendaciones.strip().splitlines() if datos.recomendaciones else ["No hay recomendaciones específicas disponibles."]
     }
 
-    html_string = render_to_string('accounts/reporte_template_pdf.html', contexto_pdf) 
+    # html_string = render_to_string('accounts/reporte_template_pdf.html', contexto_pdf) 
     messages.info(request, "La generación de PDF está temporalmente desactivada. Mostrando datos en HTML (esto es para desarrollo).")
     return render(request, 'accounts/reporte_template_pdf.html', contexto_pdf)

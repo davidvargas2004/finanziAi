@@ -10,6 +10,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from django.urls import path, include
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')), # Incluye las URLs de tu app 'accounts'
@@ -18,6 +20,8 @@ urlpatterns = [
     # ---- NUEVAS RUTAS PARA JWT ----
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+     path('api/', include('accounts.api_urls')),
+     
     # ---- FIN DE NUEVAS RUTAS ----
 ]
 
