@@ -22,7 +22,7 @@ urlpatterns = [
     path('grafico/', views.grafico_view, name='grafico'),
     path('terminos/', views.terms_of_service, name='terms_of_service'),
     path('politica-de-privacidad/', views.privacy_policy, name='privacy_policy'),
-    path('reporte/pdf/', views.generar_pdf, name='generar_pdf'),
+    path('reporte/pdf/', views.reporte_pdf, name='reporte_pdf'),
 
     # Nuevas URLs para la obtención y refresco de tokens JWT
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

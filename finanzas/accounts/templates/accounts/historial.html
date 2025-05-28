@@ -1,135 +1,143 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Consultas</title>
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Historial de Consultas</title>
 
-    <!-- CSS integrado -->
-    <style>
-        /* Estilos generales */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
+        <!-- CSS integrado -->
+        <style>
+            /* Estilos generales */
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f9;
+            }
 
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            background-color: #ffffff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
+            .container {
+                width: 80%;
+                margin: 20px auto;
+                background-color: #ffffff;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
 
-        h1, h2 {
-            color: #333;
-            text-align: center;
-        }
+            h1, h2 {
+                color: #333;
+                text-align: center;
+            }
 
-        /* Formulario */
-        form {
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+            /* Formulario */
+            form {
+                margin-bottom: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
 
-        input[type="text"], button {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
+            input[type="text"], button {
+                padding: 10px;
+                font-size: 16px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
 
-        button {
-            background-color:rgb(76, 160, 175);
-            color: white;
-            cursor: pointer;
-        }
+            button {
+                background-color:rgb(76, 160, 175);
+                color: white;
+                cursor: pointer;
+            }
 
-        button:hover {
-            background-color:rgb(69, 149, 160);
-        }
+            button:hover {
+                background-color:rgb(69, 149, 160);
+            }
 
-        /* Estilo de las consultas */
-        ul {
-            list-style: none;
-            padding: 0;
-        }
+            /* Estilo de las consultas */
+            ul {
+                list-style: none;
+                padding: 0;
+            }
 
-        li {
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
+            li {
+                padding: 10px;
+                margin-bottom: 10px;
+                background-color: #f9f9f9;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
 
-        li strong {
-            color: #333;
-        }
+            li strong {
+                color: #333;
+            }
 
-        a {
-            color: #d9534f;
-            text-decoration: none;
-            font-weight: bold;
-        }
+            a {
+                color: #d9534f;
+                text-decoration: none;
+                font-weight: bold;
+            }
 
-        a:hover {
-            text-decoration: underline;
-        }
+            a:hover {
+                text-decoration: underline;
+            }
 
-        /* Mensaje cuando no hay consultas */
-        p {
-            text-align: center;
-            font-size: 18px;
-            color: #777;
-        }
-    </style>
-</head>
-<body>
+            /* Mensaje cuando no hay consultas */
+            p {
+                text-align: center;
+                font-size: 18px;
+                color: #777;
+            }
+        </style>
+    </head>
+    <body>
 
-    <div class="container">
-        <h1>Historial de Consultas</h1>
+        <div class="container">
+            <h1>Historial de Consultas</h1>
 
-        <!-- Formulario para agregar nuevas consultas -->
-        <form method="POST" action="{% url 'historial_consultas' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Enviar consulta</button>
-        </form>
+            <!-- Formulario para agregar nuevas consultas -->
+            <form method="POST" action="{% url 'historial_consultas' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Enviar consulta</button>
+            </form>
 
-        <!-- Barra de búsqueda -->
-        <form method="GET" action="{% url 'historial_consultas' %}">
-            <input type="text" name="q" value="{{ query }}" placeholder="Buscar consultas">
-            <button type="submit">Buscar</button>
-        </form>
+            <!-- Barra de búsqueda -->
+            <form method="GET" action="{% url 'historial_consultas' %}">
+                <input type="text" name="q" value="{{ query }}" placeholder="Buscar consultas">
+                <button type="submit">Buscar</button>
+            </form>
 
-        <!-- Mostrar todas las consultas -->
-        <h2>Consultas</h2>
-        {% if consultas %}
-            <ul>
-                {% for consulta in consultas %}
-                    <li>
-                        <strong>Consulta:</strong> {{ consulta.consulta }} <br>
-                        <strong>Resultado:</strong> {{ consulta.resultado }} <br>
-                        <strong>Fecha:</strong> {{ consulta.fecha }} <br>
-                      <form method="POST" action="{% url 'eliminar_consulta' consulta.id %}" style="display:inline;">
-    {% csrf_token %}
-    <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta consulta?');" style="background-color: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
-        Eliminar
-    </button>
-</form>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No hay consultas registradas.</p>
-        {% endif %}
-    </div>
+            <!-- Mostrar todas las consultas -->
+            <h2>Consultas</h2>
+            {% if consultas %}
+                <ul>
+                    {% for consulta in consultas %}
+                        <li>
+                            <strong>Consulta:</strong> {{ consulta.consulta }} <br>
+                            <strong>Resultado:</strong> {{ consulta.resultado }} <br>
+                            <strong>Fecha:</strong> {{ consulta.fecha }} <br>
+                        <form method="POST" action="{% url 'eliminar_consulta' consulta.id %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta consulta?');" style="background-color: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 5px;">
+            Eliminar
+        </button>
+    </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay consultas registradas.</p>
+            {% endif %}
+        </div>
 
-</body>
-</html>
+    </body>
+    </html>
+
+<!-- Botón centrado para ir al Dashboard -->
+<div style="text-align: center; margin-bottom: 20px;">
+    <a href="{% url 'dashboard' %}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+        Volver al Dashboard
+    </a>
+</div>
+

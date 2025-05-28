@@ -1,44 +1,47 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reporte Financiero</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; }
-        .negativo { color: red; }
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        h2 { color: #333; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; }
-        th { background-color: #f4f4f4; text-align: left; }
-        h2 { margin-top: 30px; }
+        th, td { border: 1px solid #aaa; padding: 8px; text-align: left; }
+        th { background-color: #eee; }
     </style>
 </head>
 <body>
-    <h1>Reporte Financiero Personal</h1>
-
+    <h2>Hola, {{ nombre }}</h2>
     <p><strong>Total de Gastos:</strong> ${{ total_gastos|floatformat:2 }}</p>
-    <p><strong>Ahorro Mensual:</strong>
-        <span class="{% if ahorro_mensual < 0 %}negativo{% endif %}">${{ ahorro_mensual|floatformat:2 }}</span>
-    </p>
+    
+    <p><strong>Ahorro Mensual:</strong> ${{ ahorro_mensual|floatformat:2 }}</p>
     <p><strong>Meta de Ahorro:</strong> ${{ meta_ahorro|floatformat:2 }}</p>
 
-    <h2>Distribución porcentual de tus gastos</h2>
+    <h3>Distribución porcentual de tus gastos</h3>
     <table>
-        <tr>
-            <th>Categoría</th>
-            <th>Porcentaje del ingreso</th>
-        </tr>
-        {% for item in distribucion %}
-        <tr>
-            <td>{{ item.categoria }}</td>
-            <td>{{ item.porcentaje|floatformat:2 }}%</td>
-        </tr>
-        {% endfor %}
+        <thead>
+            <tr>
+                <th>Categoría</th>
+                <th>Porcentaje del ingreso</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for gasto in gastos %}
+            <tr>
+                <td>{{ gasto.categoria }}</td>
+                <td>{{ gasto.porcentaje }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 
-    {# Si más adelante agregas recomendaciones a tu modelo, puedes restaurar esta sección #}
-    {# 
-    <h2>Recomendaciones de la IA</h2>
-    <p>{{ recomendaciones|linebreaks }}</p>
-    #}
+    <h3>Recomendaciones de la IA</h3>
+    <ol>
+        {% for recomendacion in recomendaciones %}
+        <li>{{ recomendacion }}</li>
+        {% endfor %}
+    </ol>
 </body>
 </html>
+

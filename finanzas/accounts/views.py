@@ -338,21 +338,37 @@ def privacy_policy(request):
 
 
 #pdf generation view
+
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
-from .models import RegistroFinanciero, GastoCategoria
-import tempfile
 
-def generar_pdf(request):
-    usuario_id = request.user.id
+def reporte_pdf(request):
+    contexto = {
+        'nombre': 'Nathalia Gonzalez',
+        'total_gastos': 1280000,
+        'ahorro_mensual': 3720000,
+        'meta_ahorro': 5000000,
+        'gastos': [
+            {'categoria': 'Alimentación', 'porcentaje': 4.40},
+            {'categoria': 'Transporte', 'porcentaje': 4.00},
+            {'categoria': 'Entretenimiento', 'porcentaje': 1.20},
+            {'categoria': 'Hogar', 'porcentaje': 18.00},
+        ],
+        'recomendaciones': [
+            "A pesar de tener un buen ingreso mensual, es importante destacar que los gastos de alimentación...",
+            "Sus gastos de transporte y entretenimiento parecen razonables...",
+            "Felicidades por tener un ahorro mensual significativo...",
+        ]
+    }
 
-    try:
-        registro = RegistroFinanciero.objects.get(usuario_id=usuario_id)
-    except RegistroFinanciero.DoesNotExist:
-        return HttpResponse("No hay datos registrados.", status=404)
+    html_string = render_to_string('accounts/reporte_pdf.html', contexto)
+    pdf_file = HTML(string=html_string).write_pdf()
 
-    categorias = GastoCategoria.objects.filter(registro=registro)
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte_financiero.pdf"'
+    return response
+
 
     
     # Imprimir para depuración
